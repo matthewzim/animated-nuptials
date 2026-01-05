@@ -10,8 +10,17 @@ import { Heart } from 'lucide-react';
  * 3. Simplified 3D transform utilities.
  */
 
-export default function Envelope() {
+interface EnvelopeProps {
+  onOpen?: () => void;
+}
+
+export default function Envelope({ onOpen }: EnvelopeProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    onOpen?.();
+  };
 
   // Common styles to replace custom classes
   const preserve3d: React.CSSProperties = { transformStyle: 'preserve-3d' };
@@ -150,7 +159,7 @@ export default function Envelope() {
             <AnimatePresence>
               {!isOpen && (
                 <motion.div
-                  onClick={() => setIsOpen(true)}
+                  onClick={handleOpen}
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8, y: -20 }}
@@ -183,7 +192,3 @@ export default function Envelope() {
     </div>
   );
 }
-      </div>
-    </div>
-  );
-};
