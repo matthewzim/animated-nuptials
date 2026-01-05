@@ -30,31 +30,8 @@ const Index = () => {
       <div className="relative z-10">
         {/* Hero section with envelope */}
         <section className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
-          {/* Top decorative text */}
-          <div className="text-center mb-8 animate-fade-in-up">
-            <p className="font-elegant text-sm tracking-[0.4em] uppercase text-muted-foreground">
-              You are cordially invited
-            </p>
-          </div>
-
-          {/* Main title - only show before opening */}
-          {!isInvitationOpen && (
-            <div className="text-center mb-12 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-              <h1 className="font-script text-5xl md:text-7xl text-foreground mb-2">
-                Maria & James
-              </h1>
-              <div className="flex items-center justify-center gap-3">
-                <div className="w-16 h-px bg-gradient-to-r from-transparent to-gold" />
-                <span className="font-elegant text-sm tracking-widest text-muted-foreground">
-                  ARE GETTING MARRIED
-                </span>
-                <div className="w-16 h-px bg-gradient-to-l from-transparent to-gold" />
-              </div>
-            </div>
-          )}
-
-          {/* The interactive envelope */}
-          <div className="w-full max-w-lg mx-auto" style={{ animationDelay: "0.4s" }}>
+          {/* The interactive envelope - centered and prominent */}
+          <div className="w-full max-w-lg mx-auto animate-fade-in-up">
             <Envelope onOpen={() => setIsInvitationOpen(true)} />
           </div>
 
