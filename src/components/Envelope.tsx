@@ -165,14 +165,11 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                   whileHover={{ scale: 1.05 }}
                   className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 z-50 cursor-pointer"
                 >
-                  <div className="relative w-20 h-20 filter drop-shadow-lg">
-                    <div className="absolute inset-0 bg-red-700 rounded-full rotate-12 opacity-90 scale-110" />
-                    <div className="absolute inset-0 bg-red-800 rounded-full -rotate-6" />
-                    <div className="absolute inset-2 border-2 border-red-900/30 rounded-full flex items-center justify-center bg-red-700 shadow-inner">
-                      <span className="text-red-200 font-script text-lg tracking-wide">M&M</span>
-                    </div>
-                    <div className="absolute top-2 left-4 w-4 h-4 bg-white/10 rounded-full blur-[2px]" />
-                  </div>
+                  <img 
+                    src="/waxseal.png" 
+                    alt="Wax seal" 
+                    className="w-20 h-20 object-contain filter drop-shadow-lg"
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
