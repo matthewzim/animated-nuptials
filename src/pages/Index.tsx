@@ -31,7 +31,7 @@ const Index = () => {
     <main className="relative min-h-screen w-full bg-[#fdf8f4] overflow-hidden">
       {/* Background Audio */}
       <audio ref={audioRef} loop>
-        <source src="/music.mp3" type="audio/mpeg" />
+        <source src="/open.mp3" type="audio/mpeg" />
       </audio>
 
       {/* Background Hearts (FloatingPetals updated to hearts in previous step) */}
