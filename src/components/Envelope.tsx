@@ -52,17 +52,16 @@ export const Envelope = ({ onOpen }: EnvelopeProps) => {
             }}
           />
 
-          {/* Card container */}
-          <div className={cn(
-            "absolute inset-4 overflow-hidden",
-            isOpen ? "opacity-100" : "opacity-0"
-          )}>
-            {isOpen && <InvitationCard />}
-          </div>
+          {/* Card container - only render when open */}
+          {isOpen && (
+            <div className="absolute inset-4 z-0">
+              <InvitationCard />
+            </div>
+          )}
 
-          {/* Envelope back flap (triangle) */}
+          {/* Envelope back flap (triangle) - covers the card when closed */}
           <div
-            className="absolute inset-x-0 top-0 overflow-hidden"
+            className="absolute inset-x-0 top-0 overflow-hidden z-10"
             style={{
               height: "50%",
               clipPath: "polygon(0 0, 100% 0, 50% 100%)",
@@ -73,7 +72,7 @@ export const Envelope = ({ onOpen }: EnvelopeProps) => {
           {/* Envelope front flap with 3D animation */}
           <div
             className={cn(
-              "absolute inset-x-0 top-0 origin-top transition-transform duration-700 ease-out",
+              "absolute inset-x-0 top-0 origin-top transition-transform duration-700 ease-out z-20",
               isOpen ? "[transform:rotateX(180deg)]" : "[transform:rotateX(0deg)]"
             )}
             style={{
@@ -108,27 +107,25 @@ export const Envelope = ({ onOpen }: EnvelopeProps) => {
             />
           </div>
 
-          {/* Side flaps (decorative) */}
+          {/* Side flaps (decorative) - high z-index to cover card */}
           <div
-            className="absolute bottom-0 left-0 w-1/2 h-1/2 origin-bottom-left"
+            className="absolute bottom-0 left-0 w-1/2 h-1/2 origin-bottom-left z-10"
             style={{
               clipPath: "polygon(0 100%, 100% 100%, 0 0)",
               background: `linear-gradient(45deg, hsl(var(--envelope-flap)) 0%, hsl(var(--envelope)) 100%)`,
-              opacity: 0.7,
             }}
           />
           <div
-            className="absolute bottom-0 right-0 w-1/2 h-1/2 origin-bottom-right"
+            className="absolute bottom-0 right-0 w-1/2 h-1/2 origin-bottom-right z-10"
             style={{
               clipPath: "polygon(100% 100%, 0 100%, 100% 0)",
               background: `linear-gradient(-45deg, hsl(var(--envelope-flap)) 0%, hsl(var(--envelope)) 100%)`,
-              opacity: 0.7,
             }}
           />
 
           {/* Bottom flap */}
           <div
-            className="absolute bottom-0 inset-x-0 h-1/3"
+            className="absolute bottom-0 inset-x-0 h-1/3 z-10"
             style={{
               clipPath: "polygon(0 100%, 50% 20%, 100% 100%)",
               background: `linear-gradient(0deg, hsl(var(--envelope)) 0%, hsl(var(--envelope-flap)) 100%)`,
