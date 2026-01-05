@@ -1,13 +1,83 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { Envelope } from "@/components/Envelope";
+import { FloatingPetals } from "@/components/FloatingPetals";
+import { WeddingDetails } from "@/components/WeddingDetails";
 
 const Index = () => {
+  const [isInvitationOpen, setIsInvitationOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <main className="min-h-screen bg-background relative overflow-x-hidden">
+      {/* SEO */}
+      <title>Maria & James Wedding | June 15, 2025</title>
+      <meta name="description" content="You are cordially invited to celebrate the wedding of Maria and James on June 15, 2025 at The Grand Estate Gardens." />
+      
+      {/* Floating petals background */}
+      <FloatingPetals />
+
+      {/* Subtle background pattern */}
+      <div 
+        className="fixed inset-0 opacity-30 pointer-events-none"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, hsl(var(--dusty-rose) / 0.1) 0%, transparent 40%),
+            radial-gradient(circle at 40% 80%, hsl(var(--gold-light) / 0.1) 0%, transparent 40%)
+          `,
+        }}
+      />
+
+      <div className="relative z-10">
+        {/* Hero section with envelope */}
+        <section className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+          {/* Top decorative text */}
+          <div className="text-center mb-8 animate-fade-in-up">
+            <p className="font-elegant text-sm tracking-[0.4em] uppercase text-muted-foreground">
+              You are cordially invited
+            </p>
+          </div>
+
+          {/* Main title - only show before opening */}
+          {!isInvitationOpen && (
+            <div className="text-center mb-12 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+              <h1 className="font-script text-5xl md:text-7xl text-foreground mb-2">
+                Maria & James
+              </h1>
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-16 h-px bg-gradient-to-r from-transparent to-gold" />
+                <span className="font-elegant text-sm tracking-widest text-muted-foreground">
+                  ARE GETTING MARRIED
+                </span>
+                <div className="w-16 h-px bg-gradient-to-l from-transparent to-gold" />
+              </div>
+            </div>
+          )}
+
+          {/* The interactive envelope */}
+          <div className="w-full max-w-lg mx-auto" style={{ animationDelay: "0.4s" }}>
+            <Envelope onOpen={() => setIsInvitationOpen(true)} />
+          </div>
+
+          {/* Scroll indicator when invitation is open */}
+          {isInvitationOpen && (
+            <div 
+              className="mt-12 animate-fade-in-up flex flex-col items-center"
+              style={{ animationDelay: "1.2s" }}
+            >
+              <p className="font-elegant text-sm text-muted-foreground mb-2">
+                Scroll for details
+              </p>
+              <div className="w-px h-8 bg-gradient-to-b from-gold to-transparent animate-pulse" />
+            </div>
+          )}
+        </section>
+
+        {/* Wedding details section */}
+        <section className="py-12">
+          <WeddingDetails isVisible={isInvitationOpen} />
+        </section>
       </div>
-    </div>
+    </main>
   );
 };
 
