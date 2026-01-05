@@ -2,8 +2,7 @@ import React, { useState, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Envelope from '../components/Envelope';
 import FloatingPetals from '../components/FloatingPetals';
-import WeddingDetails from '../components/WeddingDetails';
-
+import { WeddingDetails } from '../components/WeddingDetails';
 /**
  * Main Index Page
  * Coordinates the transition between the Envelope and the Wedding Details.
@@ -61,7 +60,7 @@ const Index = () => {
             transition={{ duration: 1.5, delay: 0.2 }}
             className="relative z-10 w-full min-h-screen"
           >
-            <WeddingDetails />
+            <WeddingDetails isVisible={true} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -106,10 +105,6 @@ const Index = () => {
         </motion.button>
       )}
     </main>
-  );
-};
-
-export default Index;
   );
 };
 
