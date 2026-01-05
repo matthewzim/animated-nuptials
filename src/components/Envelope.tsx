@@ -27,7 +27,7 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
   const backfaceHidden: React.CSSProperties = { backfaceVisibility: 'hidden' };
 
   return (
-    <div className="min-h-screen bg-[#fdf8f4] flex items-center justify-center p-4 md:p-8 overflow-hidden font-serif">
+    <div className="w-full h-full flex items-center justify-center p-4 md:p-8 overflow-hidden font-serif">
       {/* SVG Filter for Paper Texture */}
       <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }}>
         <filter id="paper-grain">
@@ -49,7 +49,7 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
       </svg>
       
       {/* Scene Container */}
-      <div className="relative w-full max-w-4xl aspect-[4/3] flex items-center justify-center">
+      <div className="relative w-full max-w-lg md:max-w-2xl lg:max-w-4xl aspect-[4/3]">
         
         {/* Floor Shadow */}
         <div className="absolute bottom-10 w-[80%] h-12 bg-black/5 blur-3xl rounded-[100%] transform -translate-y-10" />
