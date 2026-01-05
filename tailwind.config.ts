@@ -57,28 +57,46 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Custom wedding colors
+        envelope: {
+          DEFAULT: "hsl(var(--envelope))",
+          inner: "hsl(var(--envelope-inner))",
+          flap: "hsl(var(--envelope-flap))",
+        },
+        wax: {
+          DEFAULT: "hsl(var(--wax-seal))",
+          shine: "hsl(var(--wax-seal-shine))",
+        },
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          light: "hsl(var(--gold-light))",
+        },
+        cream: "hsl(var(--cream))",
+        "dusty-rose": "hsl(var(--dusty-rose))",
+      },
+      fontFamily: {
+        script: ["Great Vibes", "cursive"],
+        serif: ["Playfair Display", "serif"],
+        elegant: ["Cormorant Garamond", "serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      boxShadow: {
+        envelope: "var(--shadow-envelope)",
+        card: "var(--shadow-card)",
+        seal: "var(--shadow-seal)",
+      },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
