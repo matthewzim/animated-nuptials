@@ -39,11 +39,9 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
         className="text-center mb-12 animate-fade-in-up"
         style={{ animationDelay: "0.1s" }}
       >
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <div className="w-16 h-px bg-gradient-to-r from-transparent to-gold/50" />
-          <Heart className="w-5 h-5 text-dusty-rose fill-dusty-rose" />
-          <div className="w-16 h-px bg-gradient-to-l from-transparent to-gold/50" />
-        </div>
+        <p className="font-elegant text-xs tracking-[0.3em] uppercase text-gold mb-4">
+          The Wedding Of
+        </p>
         <h3 className="font-script text-5xl md:text-6xl text-stone-600">
           Matthew & Morgan
         </h3>
