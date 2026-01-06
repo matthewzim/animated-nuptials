@@ -42,7 +42,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
           <div className="w-16 h-px bg-gradient-to-l from-transparent to-gold/50" />
         </div>
         <h3 className="font-script text-3xl text-foreground">
-          Celebration Details
+          Matthew & Morgan
         </h3>
       </div>
 
