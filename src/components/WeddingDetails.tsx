@@ -39,7 +39,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
         className="text-center mb-12 animate-fade-in-up"
         style={{ animationDelay: "0.1s" }}
       >
-        <p className="font-elegant text-xs tracking-[0.3em] uppercase text-gold mb-4">
+        <p className="font-elegant text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
           The Wedding Of
         </p>
         <h3 className="font-script text-5xl md:text-6xl text-stone-600">
