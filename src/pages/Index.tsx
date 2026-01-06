@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Envelope from '../components/Envelope';
 import FloatingPetals from '../components/FloatingPetals';
 import { WeddingDetails } from '../components/WeddingDetails';
+import headerVideo from '../assets/Header.mp4';
 
 /**
  * Main Index Page
@@ -22,8 +23,7 @@ const Index = () => {
   const pendingFractionRef = useRef<number | null>(null);
 
   // Configuration for the scroll scrub
-  const videoSrc = "/Header.mp4"; 
-  const pixelsPerSecond = 1000; 
+  const pixelsPerSecond = 1000;
 
   const handleOpen = () => {
     if (audioRef.current) {
@@ -191,7 +191,7 @@ const Index = () => {
               <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden bg-black">
                 <video
                   ref={videoRef}
-                  src={videoSrc}
+                  src={headerVideo}
                   playsInline
                   muted
                   preload="metadata"
