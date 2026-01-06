@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Calendar, MapPin, Clock, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +9,7 @@ interface WeddingDetailsProps {
 export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [videoComplete, setVideoComplete] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -16,10 +17,11 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
     if (!video || !container || !isVisible) return;
 
     let videoDuration = 0;
-    let targetTime = 0;
+    let videoProgress = 0; // 0 to 1
     let currentTime = 0;
     let animationId: number;
-    const smoothness = 0.08; // Lower = smoother but slower response
+    const smoothness = 0.08;
+    const scrollSensitivity = 0.002; // How much each scroll unit advances the video
 
     const lerp = (start: number, end: number, factor: number) => {
       return start + (end - start) * factor;
@@ -31,10 +33,9 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
         return;
       }
 
-      // Smoothly interpolate towards target time
+      const targetTime = videoProgress * videoDuration;
       currentTime = lerp(currentTime, targetTime, smoothness);
       
-      // Only update if difference is significant (avoid micro-updates)
       if (Math.abs(currentTime - video.currentTime) > 0.01) {
         video.currentTime = currentTime;
       }
@@ -42,39 +43,61 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
       animationId = requestAnimationFrame(animate);
     };
 
-    const updateTargetTime = () => {
+    const handleWheel = (e: WheelEvent) => {
       if (!videoDuration) return;
-      
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollTop = window.scrollY;
-      const scrollProgress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
-      
-      targetTime = scrollProgress * videoDuration;
+
+      // If video is complete and scrolling down, allow normal scroll
+      if (videoProgress >= 1 && e.deltaY > 0) {
+        setVideoComplete(true);
+        return;
+      }
+
+      // If at start and scrolling up, allow normal scroll
+      if (videoProgress <= 0 && e.deltaY < 0) {
+        return;
+      }
+
+      // If video complete but scrolling back up to video area
+      if (videoComplete && e.deltaY < 0) {
+        const rect = container.getBoundingClientRect();
+        if (rect.bottom > 0) {
+          setVideoComplete(false);
+          videoProgress = 1;
+        }
+        return;
+      }
+
+      // Lock scroll and control video
+      if (!videoComplete) {
+        e.preventDefault();
+        videoProgress = Math.max(0, Math.min(1, videoProgress + e.deltaY * scrollSensitivity));
+        
+        if (videoProgress >= 1) {
+          setVideoComplete(true);
+        }
+      }
     };
 
     const handleLoadedMetadata = () => {
       videoDuration = video.duration;
       currentTime = 0;
-      targetTime = 0;
-      updateTargetTime();
+      videoProgress = 0;
     };
 
     if (video.readyState >= 1) {
       videoDuration = video.duration;
-      updateTargetTime();
-      currentTime = targetTime;
     }
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    window.addEventListener('scroll', updateTargetTime, { passive: true });
+    window.addEventListener('wheel', handleWheel, { passive: false });
     animationId = requestAnimationFrame(animate);
 
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      window.removeEventListener('scroll', updateTargetTime);
+      window.removeEventListener('wheel', handleWheel);
       cancelAnimationFrame(animationId);
     };
-  }, [isVisible]);
+  }, [isVisible, videoComplete]);
 
   const details = [
     {
