@@ -102,7 +102,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
           <Heart className="w-5 h-5 text-dusty-rose fill-dusty-rose" />
           <div className="w-16 h-px bg-gradient-to-l from-transparent to-gold/50" />
         </div>
-        <h3 className="font-script text-3xl text-foreground">
+        <h3 className="font-script text-5xl md:text-6xl text-stone-600">
           Matthew & Morgan
         </h3>
       </div>
