@@ -21,9 +21,18 @@ const Index = () => {
   // Keep these out of state to avoid rerenders during scroll
   const videoDurationRef = useRef(0);
   const pendingFractionRef = useRef<number | null>(null);
+  
+  // RAF-based smooth scrubbing refs
+  const targetFractionRef = useRef(0);
+  const currentFractionRef = useRef(0);
+  const animationFrameRef = useRef<number | null>(null);
 
   // Configuration for the scroll scrub
   const pixelsPerSecond = 1000;
+  const lerpFactor = 0.08; // Smoothness factor (lower = smoother but slower)
+
+  // Lerp helper for smooth interpolation
+  const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
 
   const handleOpen = () => {
     if (audioRef.current) {
@@ -116,8 +125,23 @@ const Index = () => {
         let fraction = scrollOffset / totalScrollable;
         fraction = Math.max(0, Math.min(fraction, 1));
 
+        targetFractionRef.current = fraction;
         setScrollProgress(fraction);
-        syncVideoToFraction(fraction);
+      };
+
+      // RAF loop for smooth video scrubbing
+      const animate = () => {
+        const current = currentFractionRef.current;
+        const target = targetFractionRef.current;
+        
+        // Only update if there's meaningful difference
+        if (Math.abs(target - current) > 0.0001) {
+          const newFraction = lerp(current, target, lerpFactor);
+          currentFractionRef.current = newFraction;
+          syncVideoToFraction(newFraction);
+        }
+        
+        animationFrameRef.current = requestAnimationFrame(animate);
       };
 
       // Attach listeners
@@ -130,6 +154,9 @@ const Index = () => {
 
       video.load();
       primeVideo();
+      
+      // Start the animation loop
+      animationFrameRef.current = requestAnimationFrame(animate);
 
       if (video.readyState >= 1) {
         handleLoadedMetadata();
@@ -142,6 +169,9 @@ const Index = () => {
 
       cleanup = () => {
         window.clearTimeout(safetyTimeout);
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
         video.removeEventListener('loadedmetadata', handleLoadedMetadata);
         video.removeEventListener('loadeddata', handleLoadedMetadata);
         video.removeEventListener('durationchange', handleLoadedMetadata);
