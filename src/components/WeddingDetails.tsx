@@ -102,8 +102,8 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
         >
           RVSP
         </button>
-        <p className="mt-4 font-elegant text-xs text-muted-foreground tracking-wide">
-          Please respond by May 1st, 2026
+        <p className="mt-4 font-elegant text-sm text-muted-foreground tracking-wide">
+          Please respond by May 1st, 2026.
         </p>
       </div>
 
