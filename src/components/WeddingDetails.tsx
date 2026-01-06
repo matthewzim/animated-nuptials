@@ -31,7 +31,23 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
   if (!isVisible) return null;
 
   return (
-    <div className="mt-16 w-full max-w-2xl mx-auto px-4">
+    <div className="w-full max-w-4xl mx-auto px-4 pt-8">
+      {/* Header Video */}
+      <div 
+        className="w-full mb-12 rounded-lg overflow-hidden shadow-lg animate-fade-in-up"
+        style={{ animationDelay: "0s", animationFillMode: "both" }}
+      >
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          className="w-full h-auto"
+        >
+          <source src="/Header.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
       <div 
         className="text-center mb-12 animate-fade-in-up"
         style={{ animationDelay: "0.1s" }}
