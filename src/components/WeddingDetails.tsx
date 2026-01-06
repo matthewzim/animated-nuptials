@@ -99,7 +99,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             "hover:scale-105 hover:bg-primary/90"
           )}
         >
-          Kindly Respond
+          RVSP
         </button>
         <p className="mt-4 font-elegant text-xs text-muted-foreground tracking-wide">
           Please respond by May 1st, 2026
