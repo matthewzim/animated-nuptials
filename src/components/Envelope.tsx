@@ -208,7 +208,7 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                   <img 
                     src="/waxseal.png" 
                     alt="Wax seal" 
-                    className="w-20 h-20 object-contain filter drop-shadow-lg"
+                    className="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain filter drop-shadow-lg"
                   />
                 </motion.div>
               )}
