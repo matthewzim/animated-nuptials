@@ -64,8 +64,12 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
           >
             {/* ENVELOPE BACK */}
             <div 
-              className="absolute inset-0 bg-[#f4f1ea] border border-stone-200/50 rounded-sm shadow-xl overflow-hidden"
-              style={{ filter: 'url(#paper-grain)' }}
+              className="absolute inset-0 border border-stone-200/50 rounded-sm shadow-xl overflow-hidden"
+              style={{ 
+                backgroundImage: 'url(/envelopebackground.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
             >
               <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/5 via-transparent to-transparent opacity-30" />
             </div>
