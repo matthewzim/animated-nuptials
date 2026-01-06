@@ -150,7 +150,7 @@ const Index = () => {
 
             {/* Main Invitation Content: Only visible after scrolling through the video */}
             <div className="relative z-20 bg-[#fdf8f4] shadow-[0_-40px_60px_rgba(0,0,0,0.15)]">
-              <WeddingDetails />
+              <WeddingDetails isVisible={!showEnvelope} />
             </div>
           </motion.div>
         )}
