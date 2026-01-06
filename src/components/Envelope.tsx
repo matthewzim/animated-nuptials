@@ -154,12 +154,12 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                 backgroundPosition: 'center',
               }}
             >
-              {/* Inner edge shadow along diagonal */}
-              <div className="absolute inset-0 bg-gradient-to-l from-black/8 to-transparent" />
+              {/* Inner edge shadow along diagonal - intensified */}
+              <div className="absolute inset-0 bg-gradient-to-l from-black/15 to-transparent" />
               <div 
                 className="absolute inset-0" 
                 style={{
-                  background: 'linear-gradient(-135deg, transparent 50%, rgba(0,0,0,0.12) 80%, rgba(0,0,0,0.18) 100%)'
+                  background: 'linear-gradient(-135deg, transparent 40%, rgba(0,0,0,0.18) 70%, rgba(0,0,0,0.28) 100%)'
                 }}
               />
             </div>
