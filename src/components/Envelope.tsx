@@ -218,13 +218,20 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
       </div>
 
       {/* Footer text */}
-      <motion.p 
+      <motion.div 
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.5 }}
-        className="absolute bottom-8 text-stone-400 uppercase tracking-widest text-[10px]"
+        animate={{ opacity: 1 }}
+        className="absolute bottom-8 text-center"
       >
-        {isOpen ? "Refresh to reseal the envelope" : "Click the wax seal to open"}
-      </motion.p>
+        <p className="text-stone-600 uppercase tracking-widest text-xs mb-1">
+          {isOpen ? "Refresh to reseal the envelope" : "Click the wax seal to open"}
+        </p>
+        {!isOpen && (
+          <p className="text-stone-500 uppercase tracking-widest text-[10px]">
+            Turn on sound
+          </p>
+        )}
+      </motion.div>
     </div>
   );
 }
