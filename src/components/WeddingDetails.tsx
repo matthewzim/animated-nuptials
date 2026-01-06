@@ -113,7 +113,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
         style={{ animationDelay: "1s", animationFillMode: "both" }}
       >
         <p className="font-script text-2xl text-dusty-rose">
-          We can't wait to celebrate with you
+          We can't wait to celebrate with you.
         </p>
       </div>
     </div>
