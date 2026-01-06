@@ -230,7 +230,7 @@ const Index = () => {
                 
                 {/* Scroll Prompt Overlay */}
                 <div 
-                  className="relative z-10 text-center pointer-events-none transition-opacity duration-700"
+                  className="absolute top-1/4 left-0 right-0 z-10 text-center pointer-events-none transition-opacity duration-700"
                   style={{ opacity: scrollProgress < 0.05 ? 1 : 0 }}
                 >
                   <motion.div
