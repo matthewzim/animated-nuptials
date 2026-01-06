@@ -18,7 +18,7 @@ const Index = () => {
   const scrollTrackRef = useRef<HTMLDivElement>(null);
 
   // Configuration for the scroll scrub
-  const videoSrc = "/header.mp4"; 
+  const videoSrc = "/Header.mp4"; 
   const pixelsPerSecond = 1000; 
 
   const handleOpen = () => {
@@ -175,7 +175,7 @@ const Index = () => {
 
             {/* Wedding Details Reveal */}
             <div className="relative z-20 bg-[#fdf8f4] shadow-[0_-40px_60px_rgba(0,0,0,0.15)]">
-              <WeddingDetails />
+              <WeddingDetails isVisible={!showEnvelope} />
             </div>
           </motion.div>
         )}
