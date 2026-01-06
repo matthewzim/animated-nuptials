@@ -13,27 +13,42 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
   useEffect(() => {
     const video = videoRef.current;
     const container = containerRef.current;
-    if (!video || !container) return;
+    if (!video || !container || !isVisible) return;
 
-    const handleScroll = () => {
-      const rect = container.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
+    let videoDuration = 0;
+
+    const updateVideoTime = () => {
+      if (!videoDuration) return;
       
-      // Calculate how much of the video container is visible and scrolled past
-      const scrollProgress = Math.max(0, Math.min(1, 
-        (windowHeight - rect.top) / (windowHeight + rect.height)
-      ));
+      // Get total scrollable height of the document
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollTop = window.scrollY;
+      
+      // Calculate scroll progress (0 to 1)
+      const scrollProgress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
       
       // Map scroll progress to video time
-      if (video.duration && !isNaN(video.duration)) {
-        video.currentTime = scrollProgress * video.duration;
-      }
+      video.currentTime = scrollProgress * videoDuration;
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial call to set position
+    const handleLoadedMetadata = () => {
+      videoDuration = video.duration;
+      updateVideoTime();
+    };
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    // If metadata already loaded
+    if (video.readyState >= 1) {
+      videoDuration = video.duration;
+      updateVideoTime();
+    }
+
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    window.addEventListener('scroll', updateVideoTime, { passive: true });
+
+    return () => {
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      window.removeEventListener('scroll', updateVideoTime);
+    };
   }, [isVisible]);
 
   const details = [
