@@ -202,7 +202,7 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8, y: -20 }}
                   whileHover={{ scale: 1.05 }}
-                  className="absolute left-[48%] top-[50%] -translate-x-1/2 -translate-y-1/2 z-50 cursor-pointer"
+                  className="absolute left-[45%] top-[50%] -translate-x-1/2 -translate-y-1/2 z-50 cursor-pointer"
                 >
                   <img 
                     src="/waxseal.png" 
