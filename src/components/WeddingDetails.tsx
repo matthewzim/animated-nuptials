@@ -16,38 +16,63 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
     if (!video || !container || !isVisible) return;
 
     let videoDuration = 0;
+    let targetTime = 0;
+    let currentTime = 0;
+    let animationId: number;
+    const smoothness = 0.08; // Lower = smoother but slower response
 
-    const updateVideoTime = () => {
+    const lerp = (start: number, end: number, factor: number) => {
+      return start + (end - start) * factor;
+    };
+
+    const animate = () => {
+      if (!videoDuration) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+
+      // Smoothly interpolate towards target time
+      currentTime = lerp(currentTime, targetTime, smoothness);
+      
+      // Only update if difference is significant (avoid micro-updates)
+      if (Math.abs(currentTime - video.currentTime) > 0.01) {
+        video.currentTime = currentTime;
+      }
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    const updateTargetTime = () => {
       if (!videoDuration) return;
       
-      // Get total scrollable height of the document
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
       const scrollTop = window.scrollY;
-      
-      // Calculate scroll progress (0 to 1)
       const scrollProgress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
       
-      // Map scroll progress to video time
-      video.currentTime = scrollProgress * videoDuration;
+      targetTime = scrollProgress * videoDuration;
     };
 
     const handleLoadedMetadata = () => {
       videoDuration = video.duration;
-      updateVideoTime();
+      currentTime = 0;
+      targetTime = 0;
+      updateTargetTime();
     };
 
-    // If metadata already loaded
     if (video.readyState >= 1) {
       videoDuration = video.duration;
-      updateVideoTime();
+      updateTargetTime();
+      currentTime = targetTime;
     }
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    window.addEventListener('scroll', updateVideoTime, { passive: true });
+    window.addEventListener('scroll', updateTargetTime, { passive: true });
+    animationId = requestAnimationFrame(animate);
 
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      window.removeEventListener('scroll', updateVideoTime);
+      window.removeEventListener('scroll', updateTargetTime);
+      cancelAnimationFrame(animationId);
     };
   }, [isVisible]);
 
