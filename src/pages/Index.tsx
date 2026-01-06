@@ -267,7 +267,11 @@ const Index = () => {
             </section>
 
             {/* Wedding Details Reveal */}
-            <div className="relative z-20 bg-[#fdf8f4] shadow-[0_-40px_60px_rgba(0,0,0,0.15)]">
+            <div className="relative z-20 bg-[#fdf8f4] shadow-[0_-40px_60px_rgba(0,0,0,0.15)] overflow-hidden">
+              {/* Floating hearts for this section */}
+              <div className="absolute inset-0 pointer-events-none z-30">
+                <FloatingPetals />
+              </div>
               <WeddingDetails isVisible={!showEnvelope} />
             </div>
           </motion.div>
