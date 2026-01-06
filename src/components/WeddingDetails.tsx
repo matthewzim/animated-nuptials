@@ -20,8 +20,8 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
     let videoProgress = 0; // 0 to 1
     let currentTime = 0;
     let animationId: number;
-    const smoothness = 0.08;
-    const scrollSensitivity = 0.002; // How much each scroll unit advances the video
+    const smoothness = 0.1;
+    const scrollSensitivity = 0.003;
 
     const lerp = (start: number, end: number, factor: number) => {
       return start + (end - start) * factor;
@@ -36,8 +36,9 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
       const targetTime = videoProgress * videoDuration;
       currentTime = lerp(currentTime, targetTime, smoothness);
       
-      if (Math.abs(currentTime - video.currentTime) > 0.01) {
-        video.currentTime = currentTime;
+      // Only update if the difference is significant enough
+      if (Math.abs(currentTime - video.currentTime) > 0.016) {
+        video.currentTime = Math.max(0, Math.min(currentTime, videoDuration - 0.1));
       }
 
       animationId = requestAnimationFrame(animate);
@@ -47,7 +48,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
       if (!videoDuration) return;
 
       // If video is complete and scrolling down, allow normal scroll
-      if (videoProgress >= 1 && e.deltaY > 0) {
+      if (videoProgress >= 0.99 && e.deltaY > 0) {
         setVideoComplete(true);
         return;
       }
@@ -62,7 +63,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
         const rect = container.getBoundingClientRect();
         if (rect.bottom > 0) {
           setVideoComplete(false);
-          videoProgress = 1;
+          videoProgress = 0.99;
         }
         return;
       }
@@ -70,9 +71,10 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
       // Lock scroll and control video
       if (!videoComplete) {
         e.preventDefault();
+        e.stopPropagation();
         videoProgress = Math.max(0, Math.min(1, videoProgress + e.deltaY * scrollSensitivity));
         
-        if (videoProgress >= 1) {
+        if (videoProgress >= 0.99) {
           setVideoComplete(true);
         }
       }
@@ -82,10 +84,13 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
       videoDuration = video.duration;
       currentTime = 0;
       videoProgress = 0;
+      video.currentTime = 0;
     };
 
+    // Initialize video
     if (video.readyState >= 1) {
       videoDuration = video.duration;
+      video.currentTime = 0;
     }
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
