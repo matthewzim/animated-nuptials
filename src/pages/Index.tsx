@@ -12,10 +12,14 @@ const Index = () => {
   const [showEnvelope, setShowEnvelope] = useState(true);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const scrollTrackRef = useRef<HTMLDivElement>(null);
+
+  // Keep these out of state to avoid rerenders during scroll
+  const videoDurationRef = useRef(0);
+  const pendingFractionRef = useRef<number | null>(null);
 
   // Configuration for the scroll scrub
   const videoSrc = "/Header.mp4"; 
@@ -38,50 +42,89 @@ const Index = () => {
 
     // Forces a height for the scroll track based on video duration
     const updateTrackHeight = () => {
-      const duration = video.duration || 5; // Default to 5s if metadata is slightly delayed
+      const duration = videoDurationRef.current || video.duration || 5;
       const trackHeight = window.innerHeight + (duration * pixelsPerSecond);
       track.style.height = `${trackHeight}px`;
-      
-      // Once metadata is loaded, we can mark the video as ready to scrub
-      if (video.duration > 0) {
+
+      // Only mark "ready" once we truly know duration
+      if ((videoDurationRef.current || video.duration) > 0) {
         setIsVideoReady(true);
       }
     };
 
-    const handleScroll = () => {
-      const duration = video.duration;
+    const syncVideoToFraction = (fraction: number) => {
+      pendingFractionRef.current = fraction;
+      const duration = videoDurationRef.current || video.duration;
       if (!duration || isNaN(duration)) return;
+      // Clamp slightly below the end to avoid some browsers freezing on the last frame
+      video.currentTime = Math.max(0, Math.min(duration - 0.05, fraction * duration));
+    };
 
+    const handleLoadedMetadata = () => {
+      const duration = video.duration || 0;
+      if (duration > 0) {
+        videoDurationRef.current = duration;
+      }
+
+      // Ensure we're in a paused, seekable state for scroll-scrubbing
+      video.pause();
+      if (video.currentTime !== 0) video.currentTime = 0;
+
+      updateTrackHeight();
+
+      if (pendingFractionRef.current != null && (videoDurationRef.current || video.duration) > 0) {
+        syncVideoToFraction(pendingFractionRef.current);
+      }
+
+      setIsVideoReady(true);
+    };
+
+    const primeVideo = async () => {
+      // Some browsers won't update frames on `currentTime` until the video has been "activated"
+      try {
+        await video.play();
+        video.pause();
+      } catch {
+        // ignore autoplay restrictions; metadata should still load
+      }
+    };
+
+    const handleScroll = () => {
       const rect = track.getBoundingClientRect();
       const viewHeight = window.innerHeight;
 
-      // Calculate progress (0 to 1) based on track position relative to viewport
       // rect.top will be negative as we scroll down the track
       const scrollOffset = -rect.top;
       const totalScrollable = rect.height - viewHeight;
-      
       if (totalScrollable <= 0) return;
 
       let fraction = scrollOffset / totalScrollable;
       fraction = Math.max(0, Math.min(fraction, 1));
 
-      // Synchronize video time to scroll fraction
-      video.currentTime = fraction * duration;
       setScrollProgress(fraction);
+      syncVideoToFraction(fraction);
     };
 
     // Attach listeners
-    video.addEventListener('loadedmetadata', updateTrackHeight);
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    video.addEventListener('loadeddata', handleLoadedMetadata);
+    video.addEventListener('durationchange', handleLoadedMetadata);
     video.addEventListener('canplay', updateTrackHeight);
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', updateTrackHeight);
 
+    // Proactively start loading metadata so duration is available for scrubbing
+    video.load();
+    primeVideo();
+
     // Fallback: If metadata is already ready or cached
     if (video.readyState >= 1) {
+      handleLoadedMetadata();
+    } else {
       updateTrackHeight();
     }
 
-    // Safety Timeout: If for some reason metadata/canplay doesn't fire, 
+    // Safety Timeout: If for some reason metadata/canplay doesn't fire,
     // hide the loading screen after 3 seconds anyway to allow user access.
     const safetyTimeout = setTimeout(() => {
       setIsVideoReady(true);
@@ -89,7 +132,9 @@ const Index = () => {
 
     return () => {
       clearTimeout(safetyTimeout);
-      video.removeEventListener('loadedmetadata', updateTrackHeight);
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.removeEventListener('loadeddata', handleLoadedMetadata);
+      video.removeEventListener('durationchange', handleLoadedMetadata);
       video.removeEventListener('canplay', updateTrackHeight);
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', updateTrackHeight);
@@ -131,7 +176,7 @@ const Index = () => {
                   src={videoSrc}
                   playsInline
                   muted
-                  preload="auto"
+                  preload="metadata"
                   className="absolute inset-0 w-full h-full object-cover opacity-90"
                 />
                 
