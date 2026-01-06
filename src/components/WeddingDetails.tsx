@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { Calendar, MapPin, Clock, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -6,6 +7,35 @@ interface WeddingDetailsProps {
 }
 
 export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const container = containerRef.current;
+    if (!video || !container) return;
+
+    const handleScroll = () => {
+      const rect = container.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate how much of the video container is visible and scrolled past
+      const scrollProgress = Math.max(0, Math.min(1, 
+        (windowHeight - rect.top) / (windowHeight + rect.height)
+      ));
+      
+      // Map scroll progress to video time
+      if (video.duration && !isNaN(video.duration)) {
+        video.currentTime = scrollProgress * video.duration;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial call to set position
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isVisible]);
+
   const details = [
     {
       icon: Calendar,
@@ -32,15 +62,15 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 pt-8">
-      {/* Header Video */}
+      {/* Header Video - Scroll Controlled */}
       <div 
+        ref={containerRef}
         className="w-full mb-12 rounded-lg overflow-hidden shadow-lg animate-fade-in-up"
         style={{ animationDelay: "0s", animationFillMode: "both" }}
       >
         <video 
-          autoPlay 
+          ref={videoRef}
           muted 
-          loop 
           playsInline
           className="w-full h-auto"
         >
