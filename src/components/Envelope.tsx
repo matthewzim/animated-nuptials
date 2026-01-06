@@ -108,10 +108,12 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
 
             {/* ENVELOPE FRONT - BOTTOM FLAP */}
             <div 
-              className="absolute bottom-0 left-0 right-0 h-3/5 bg-[#ece8df] origin-bottom z-20"
+              className="absolute bottom-0 left-0 right-0 h-3/5 origin-bottom z-20"
               style={{ 
                 clipPath: 'polygon(0% 100%, 100% 100%, 50% 0%)',
-                filter: 'url(#paper-grain)',
+                backgroundImage: 'url(/envelopebackground.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
@@ -119,19 +121,23 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
 
             {/* ENVELOPE FRONT - SIDE FLAPS */}
             <div 
-              className="absolute inset-y-0 left-0 w-3/5 bg-[#f0ede6] z-10"
+              className="absolute inset-y-0 left-0 w-3/5 z-10"
               style={{ 
                 clipPath: 'polygon(0% 0%, 0% 100%, 100% 50%)',
-                filter: 'url(#paper-grain)'
+                backgroundImage: 'url(/envelopebackground.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent" />
             </div>
             <div 
-              className="absolute inset-y-0 right-0 w-3/5 bg-[#f0ede6] z-10"
+              className="absolute inset-y-0 right-0 w-3/5 z-10"
               style={{ 
                 clipPath: 'polygon(100% 0%, 100% 100%, 0% 50%)',
-                filter: 'url(#paper-grain)'
+                backgroundImage: 'url(/envelopebackground.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-l from-black/5 to-transparent" />
@@ -141,17 +147,25 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
             <motion.div
               animate={{ rotateX: isOpen ? -170 : 0 }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
-              className="absolute top-0 left-0 right-0 h-3/5 bg-[#ece8df] origin-top z-30"
+              className="absolute top-0 left-0 right-0 h-3/5 origin-top z-30"
               style={{ 
                 ...preserve3d,
                 clipPath: 'polygon(0% 0%, 100% 0%, 50% 100%)',
-                filter: 'url(#paper-grain)',
+                backgroundImage: 'url(/envelopebackground.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
               }}
             >
               {/* Flap Underside (Visible when open) */}
               <div 
-                className="absolute inset-0 bg-[#e5e1d7]" 
-                style={{ ...backfaceHidden, transform: 'rotateX(180deg)' }} 
+                className="absolute inset-0" 
+                style={{ 
+                  ...backfaceHidden, 
+                  transform: 'rotateX(180deg)',
+                  backgroundImage: 'url(/envelopebackground.png)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }} 
               />
               
               {/* Flap Top Detail */}
