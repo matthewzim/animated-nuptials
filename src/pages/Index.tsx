@@ -160,7 +160,7 @@ const Index = () => {
   }, [showEnvelope]);
 
   return (
-    <main className="relative min-h-screen w-full bg-[#fdf8f4] overflow-x-hidden">
+    <main className="relative min-h-screen w-full bg-[#fdf8f4]">
       <audio ref={audioRef} loop>
         <source src="/open.mp3" type="audio/mpeg" />
       </audio>
