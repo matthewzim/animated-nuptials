@@ -10,20 +10,20 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
     {
       icon: Calendar,
       title: "The Date",
-      content: "June 15, 2025",
+      content: "August 8th, 2026",
       delay: "0.2s",
     },
     {
       icon: Clock,
       title: "The Time",
-      content: "4:00 PM",
+      content: "1:00 PM Arrival",
       delay: "0.4s",
     },
     {
       icon: MapPin,
       title: "The Venue",
-      content: "The Grand Estate Gardens",
-      subContent: "123 Blossom Lane, Tuscany Valley",
+      content: "UBC Botanical Garden",
+      subContent: "6804 SW Marine Dr, Vancouver, BC V6T 2J9",
       delay: "0.6s",
     },
   ];
