@@ -28,7 +28,7 @@ const Index = () => {
   };
 
   return (
-    <main className="relative min-h-screen w-full bg-[#fdf8f4] overflow-hidden">
+    <main className="relative min-h-screen w-full bg-[#fdf8f4]">
       {/* Background Audio */}
       <audio ref={audioRef} loop>
         <source src="/open.mp3" type="audio/mpeg" />
