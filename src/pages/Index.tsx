@@ -236,8 +236,11 @@ const Index = () => {
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="space-y-4"
+                    className="space-y-2"
                   >
+                    <p className="text-white text-lg md:text-xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
+                      08.08.2026
+                    </p>
                     <h2 className="text-white text-3xl md:text-5xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
                       You're Cordially Invited
                     </h2>
