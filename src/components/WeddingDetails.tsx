@@ -1,4 +1,3 @@
-import { useRef, useEffect, useState } from "react";
 import { Calendar, MapPin, Clock, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -7,103 +6,6 @@ interface WeddingDetailsProps {
 }
 
 export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [videoComplete, setVideoComplete] = useState(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    const container = containerRef.current;
-    if (!video || !container || !isVisible) return;
-
-    let videoDuration = 0;
-    let videoProgress = 0; // 0 to 1
-    let currentTime = 0;
-    let animationId: number;
-    const smoothness = 0.1;
-    const scrollSensitivity = 0.003;
-
-    const lerp = (start: number, end: number, factor: number) => {
-      return start + (end - start) * factor;
-    };
-
-    const animate = () => {
-      if (!videoDuration) {
-        animationId = requestAnimationFrame(animate);
-        return;
-      }
-
-      const targetTime = videoProgress * videoDuration;
-      currentTime = lerp(currentTime, targetTime, smoothness);
-      
-      // Only update if the difference is significant enough
-      if (Math.abs(currentTime - video.currentTime) > 0.016) {
-        video.currentTime = Math.max(0, Math.min(currentTime, videoDuration - 0.1));
-      }
-
-      animationId = requestAnimationFrame(animate);
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (!videoDuration) return;
-
-      // If video is complete and scrolling down, allow normal scroll
-      if (videoProgress >= 0.99 && e.deltaY > 0) {
-        setVideoComplete(true);
-        return;
-      }
-
-      // If at start and scrolling up, allow normal scroll
-      if (videoProgress <= 0 && e.deltaY < 0) {
-        return;
-      }
-
-      // If video complete but scrolling back up to video area
-      if (videoComplete && e.deltaY < 0) {
-        const rect = container.getBoundingClientRect();
-        if (rect.bottom > 0) {
-          setVideoComplete(false);
-          videoProgress = 0.99;
-        }
-        return;
-      }
-
-      // Lock scroll and control video
-      if (!videoComplete) {
-        e.preventDefault();
-        e.stopPropagation();
-        videoProgress = Math.max(0, Math.min(1, videoProgress + e.deltaY * scrollSensitivity));
-        
-        if (videoProgress >= 0.99) {
-          setVideoComplete(true);
-        }
-      }
-    };
-
-    const handleLoadedMetadata = () => {
-      videoDuration = video.duration;
-      currentTime = 0;
-      videoProgress = 0;
-      video.currentTime = 0;
-    };
-
-    // Initialize video
-    if (video.readyState >= 1) {
-      videoDuration = video.duration;
-      video.currentTime = 0;
-    }
-
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    animationId = requestAnimationFrame(animate);
-
-    return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      window.removeEventListener('wheel', handleWheel);
-      cancelAnimationFrame(animationId);
-    };
-  }, [isVisible, videoComplete]);
-
   const details = [
     {
       icon: Calendar,
@@ -128,24 +30,11 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
 
   if (!isVisible) return null;
 
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 pt-8">
-      {/* Header Video - Scroll Controlled */}
-      <div 
-        ref={containerRef}
-        className="w-full mb-12 rounded-lg overflow-hidden shadow-lg animate-fade-in-up"
-        style={{ animationDelay: "0s", animationFillMode: "both" }}
-      >
-        <video 
-          ref={videoRef}
-          muted 
-          playsInline
-          className="w-full h-auto"
-        >
-          <source src="/Header.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-      </div>
+      {/* Header video removed: the scroll-scrub cinematic video lives in the main page section above */}
+
       <div 
         className="text-center mb-12 animate-fade-in-up"
         style={{ animationDelay: "0.1s" }}
