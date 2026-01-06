@@ -48,12 +48,10 @@ export const InvitationCard = () => {
         Maria & James
       </h2>
 
-      {/* Ampersand decoration */}
-      <div className="flex items-center gap-3 my-2">
-        <div className="w-12 h-px bg-gold/50" />
-        <span className="font-script text-2xl text-gold">♥</span>
-        <div className="w-12 h-px bg-gold/50" />
-      </div>
+      {/* The Wedding Of text */}
+      <p className="font-elegant text-xs tracking-[0.3em] uppercase text-gold my-2">
+        The Wedding Of
+      </p>
 
       {/* Invitation text */}
       <p 
