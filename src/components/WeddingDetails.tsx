@@ -102,7 +102,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
           Kindly Respond
         </button>
         <p className="mt-4 font-elegant text-xs text-muted-foreground tracking-wide">
-          Please respond by May 1st, 2025
+          Please respond by May 1st, 2026
         </p>
       </div>
 
