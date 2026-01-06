@@ -14,8 +14,8 @@ const Index = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const scrollTrackRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const scrollTrackRef = useRef<HTMLElement | null>(null);
 
   // Keep these out of state to avoid rerenders during scroll
   const videoDurationRef = useRef(0);
@@ -33,111 +33,129 @@ const Index = () => {
   };
 
   useEffect(() => {
-    // We only initialize the video logic once the envelope is opened
     if (showEnvelope) return;
 
-    const video = videoRef.current;
-    const track = scrollTrackRef.current;
-    if (!video || !track) return;
+    let rafId = 0;
+    let cleanup: (() => void) | null = null;
 
-    // Forces a height for the scroll track based on video duration
-    const updateTrackHeight = () => {
-      const duration = videoDurationRef.current || video.duration || 5;
-      const trackHeight = window.innerHeight + (duration * pixelsPerSecond);
-      track.style.height = `${trackHeight}px`;
-
-      // Only mark "ready" once we truly know duration
-      if ((videoDurationRef.current || video.duration) > 0) {
-        setIsVideoReady(true);
-      }
-    };
-
-    const syncVideoToFraction = (fraction: number) => {
-      pendingFractionRef.current = fraction;
-      const duration = videoDurationRef.current || video.duration;
-      if (!duration || isNaN(duration)) return;
-      // Clamp slightly below the end to avoid some browsers freezing on the last frame
-      video.currentTime = Math.max(0, Math.min(duration - 0.05, fraction * duration));
-    };
-
-    const handleLoadedMetadata = () => {
-      const duration = video.duration || 0;
-      if (duration > 0) {
-        videoDurationRef.current = duration;
+    const initWhenMounted = () => {
+      const video = videoRef.current;
+      const track = scrollTrackRef.current;
+      if (!video || !track) {
+        rafId = window.requestAnimationFrame(initWhenMounted);
+        return;
       }
 
-      // Ensure we're in a paused, seekable state for scroll-scrubbing
-      video.pause();
-      if (video.currentTime !== 0) video.currentTime = 0;
+      // Forces a height for the scroll track based on video duration
+      const updateTrackHeight = () => {
+        const duration = videoDurationRef.current || (Number.isFinite(video.duration) ? video.duration : 0) || 5;
+        const trackHeight = window.innerHeight + (duration * pixelsPerSecond);
+        (track as HTMLElement).style.height = `${trackHeight}px`;
 
-      updateTrackHeight();
+        // Only mark "ready" once we truly know duration
+        if ((videoDurationRef.current || video.duration) > 0) {
+          setIsVideoReady(true);
+        }
+      };
 
-      if (pendingFractionRef.current != null && (videoDurationRef.current || video.duration) > 0) {
-        syncVideoToFraction(pendingFractionRef.current);
-      }
+      const getDuration = () => {
+        const d = videoDurationRef.current || (Number.isFinite(video.duration) ? video.duration : 0);
+        if (d > 0) return d;
+        if (video.seekable?.length) {
+          const seekableEnd = video.seekable.end(video.seekable.length - 1);
+          if (Number.isFinite(seekableEnd) && seekableEnd > 0) return seekableEnd;
+        }
+        return 0;
+      };
 
-      setIsVideoReady(true);
-    };
+      const syncVideoToFraction = (fraction: number) => {
+        pendingFractionRef.current = fraction;
+        const duration = getDuration();
+        if (!duration) return;
+        // Clamp slightly below the end to avoid some browsers freezing on the last frame
+        video.currentTime = Math.max(0, Math.min(duration - 0.05, fraction * duration));
+      };
 
-    const primeVideo = async () => {
-      // Some browsers won't update frames on `currentTime` until the video has been "activated"
-      try {
-        await video.play();
+      const handleLoadedMetadata = () => {
+        const duration = getDuration();
+        if (duration > 0) {
+          videoDurationRef.current = duration;
+        }
+
+        // Ensure we're in a paused, seekable state for scroll-scrubbing
         video.pause();
-      } catch {
-        // ignore autoplay restrictions; metadata should still load
+        if (video.currentTime !== 0) video.currentTime = 0;
+
+        updateTrackHeight();
+
+        if (pendingFractionRef.current != null && getDuration() > 0) {
+          syncVideoToFraction(pendingFractionRef.current);
+        }
+
+        setIsVideoReady(true);
+      };
+
+      const primeVideo = async () => {
+        // Some browsers won't update frames on `currentTime` until the video has been "activated"
+        try {
+          await video.play();
+          video.pause();
+        } catch {
+          // ignore autoplay restrictions; metadata should still load
+        }
+      };
+
+      const handleScroll = () => {
+        const rect = (track as HTMLElement).getBoundingClientRect();
+        const viewHeight = window.innerHeight;
+
+        const scrollOffset = -rect.top;
+        const totalScrollable = rect.height - viewHeight;
+        if (totalScrollable <= 0) return;
+
+        let fraction = scrollOffset / totalScrollable;
+        fraction = Math.max(0, Math.min(fraction, 1));
+
+        setScrollProgress(fraction);
+        syncVideoToFraction(fraction);
+      };
+
+      // Attach listeners
+      video.addEventListener('loadedmetadata', handleLoadedMetadata);
+      video.addEventListener('loadeddata', handleLoadedMetadata);
+      video.addEventListener('durationchange', handleLoadedMetadata);
+      video.addEventListener('canplay', updateTrackHeight);
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('resize', updateTrackHeight);
+
+      video.load();
+      primeVideo();
+
+      if (video.readyState >= 1) {
+        handleLoadedMetadata();
+      } else {
+        updateTrackHeight();
       }
+
+      // Always unstick the UI even if media events never fire
+      const safetyTimeout = window.setTimeout(() => setIsVideoReady(true), 3500);
+
+      cleanup = () => {
+        window.clearTimeout(safetyTimeout);
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        video.removeEventListener('loadeddata', handleLoadedMetadata);
+        video.removeEventListener('durationchange', handleLoadedMetadata);
+        video.removeEventListener('canplay', updateTrackHeight);
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('resize', updateTrackHeight);
+      };
     };
 
-    const handleScroll = () => {
-      const rect = track.getBoundingClientRect();
-      const viewHeight = window.innerHeight;
-
-      // rect.top will be negative as we scroll down the track
-      const scrollOffset = -rect.top;
-      const totalScrollable = rect.height - viewHeight;
-      if (totalScrollable <= 0) return;
-
-      let fraction = scrollOffset / totalScrollable;
-      fraction = Math.max(0, Math.min(fraction, 1));
-
-      setScrollProgress(fraction);
-      syncVideoToFraction(fraction);
-    };
-
-    // Attach listeners
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('loadeddata', handleLoadedMetadata);
-    video.addEventListener('durationchange', handleLoadedMetadata);
-    video.addEventListener('canplay', updateTrackHeight);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', updateTrackHeight);
-
-    // Proactively start loading metadata so duration is available for scrubbing
-    video.load();
-    primeVideo();
-
-    // Fallback: If metadata is already ready or cached
-    if (video.readyState >= 1) {
-      handleLoadedMetadata();
-    } else {
-      updateTrackHeight();
-    }
-
-    // Safety Timeout: If for some reason metadata/canplay doesn't fire,
-    // hide the loading screen after 3 seconds anyway to allow user access.
-    const safetyTimeout = setTimeout(() => {
-      setIsVideoReady(true);
-    }, 3000);
+    initWhenMounted();
 
     return () => {
-      clearTimeout(safetyTimeout);
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('loadeddata', handleLoadedMetadata);
-      video.removeEventListener('durationchange', handleLoadedMetadata);
-      video.removeEventListener('canplay', updateTrackHeight);
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', updateTrackHeight);
+      if (rafId) window.cancelAnimationFrame(rafId);
+      cleanup?.();
     };
   }, [showEnvelope]);
 
