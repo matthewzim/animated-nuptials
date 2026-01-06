@@ -239,10 +239,10 @@ const Index = () => {
                     className="space-y-4"
                   >
                     <h2 className="text-white text-3xl md:text-5xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
-                      Our Journey
+                      You're Cordially Invited
                     </h2>
                     <p className="text-white/70 text-sm tracking-widest animate-bounce uppercase">
-                      Scroll to begin
+                      
                     </p>
                   </motion.div>
                 </div>
