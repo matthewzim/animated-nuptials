@@ -116,7 +116,14 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                 backgroundPosition: 'center',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
+              {/* Inner edge shadows for depth */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/8 to-transparent" />
+              <div 
+                className="absolute inset-0" 
+                style={{
+                  background: 'linear-gradient(to bottom right, rgba(0,0,0,0.15) 0%, transparent 30%), linear-gradient(to bottom left, rgba(0,0,0,0.15) 0%, transparent 30%)'
+                }}
+              />
             </div>
 
             {/* ENVELOPE FRONT - SIDE FLAPS */}
@@ -129,7 +136,14 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                 backgroundPosition: 'center',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent" />
+              {/* Inner edge shadow along diagonal */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/8 to-transparent" />
+              <div 
+                className="absolute inset-0" 
+                style={{
+                  background: 'linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.12) 80%, rgba(0,0,0,0.18) 100%)'
+                }}
+              />
             </div>
             <div 
               className="absolute inset-y-0 right-0 w-3/5 z-10"
@@ -140,7 +154,14 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                 backgroundPosition: 'center',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-l from-black/5 to-transparent" />
+              {/* Inner edge shadow along diagonal */}
+              <div className="absolute inset-0 bg-gradient-to-l from-black/8 to-transparent" />
+              <div 
+                className="absolute inset-0" 
+                style={{
+                  background: 'linear-gradient(-135deg, transparent 50%, rgba(0,0,0,0.12) 80%, rgba(0,0,0,0.18) 100%)'
+                }}
+              />
             </div>
 
             {/* ENVELOPE FRONT - TOP FLAP */}
