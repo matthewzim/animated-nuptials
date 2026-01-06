@@ -21,7 +21,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
     },
     {
       icon: MapPin,
-      title: "The Venue",
+      title: "Ceremony & Reception",
       content: "UBC Botanical Garden",
       subContent: "6804 SW Marine Dr, Vancouver, BC V6T 2J9",
       delay: "0.6s",
