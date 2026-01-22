@@ -37,9 +37,7 @@ const Index = () => {
   const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
 
   const handleOpen = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch(err => console.log("Audio blocked", err));
-    }
+    // Audio no longer auto-plays - user can start it with the music button
     setShowEnvelope(false);
   };
 
