@@ -81,8 +81,13 @@ const Index = () => {
         pendingFractionRef.current = fraction;
         const duration = getDuration();
         if (!duration) return;
-        // Clamp slightly below the end to avoid some browsers freezing on the last frame
-        video.currentTime = Math.max(0, Math.min(duration - 0.05, fraction * duration));
+        
+        const targetTime = Math.max(0, Math.min(duration - 0.05, fraction * duration));
+        
+        // Only update if there's a meaningful change to avoid excessive seeking
+        if (Math.abs(video.currentTime - targetTime) > 0.01) {
+          video.currentTime = targetTime;
+        }
       };
 
       const handleLoadedMetadata = () => {
@@ -93,9 +98,11 @@ const Index = () => {
 
         // Ensure we're in a paused, seekable state for scroll-scrubbing
         video.pause();
-        if (video.currentTime !== 0) video.currentTime = 0;
 
         updateTrackHeight();
+        
+        // Sync to current scroll position after metadata loads
+        handleScroll();
 
         if (pendingFractionRef.current != null && getDuration() > 0) {
           syncVideoToFraction(pendingFractionRef.current);
@@ -104,16 +111,7 @@ const Index = () => {
         setIsVideoReady(true);
       };
 
-      const primeVideo = async () => {
-        // Some browsers won't update frames on `currentTime` until the video has been "activated"
-        try {
-          await video.play();
-          video.pause();
-        } catch {
-          // ignore autoplay restrictions; metadata should still load
-        }
-      };
-
+      // Define handleScroll before it's used
       const handleScroll = () => {
         const trackElement = track as HTMLElement;
         const rect = trackElement.getBoundingClientRect();
@@ -132,8 +130,28 @@ const Index = () => {
         setScrollProgress(fraction);
       };
 
-      // Use both window scroll and a scroll container listener for better desktop support
-      const scrollContainer = document.scrollingElement || document.documentElement;
+      const primeVideo = async () => {
+        // Some browsers won't update frames on `currentTime` until the video has been "activated"
+        // Use a muted inline play which is generally allowed
+        try {
+          video.muted = true;
+          video.playsInline = true;
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+            video.pause();
+            video.currentTime = 0;
+          }
+        } catch {
+          // Autoplay blocked - that's fine, we'll still try to seek
+          // Force a frame update by setting currentTime
+          video.currentTime = 0.001;
+          setTimeout(() => {
+            video.currentTime = 0;
+          }, 50);
+        }
+      };
+
 
       // RAF loop for smooth video scrubbing
       const animate = () => {
