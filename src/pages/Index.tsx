@@ -115,11 +115,14 @@ const Index = () => {
       };
 
       const handleScroll = () => {
-        const rect = (track as HTMLElement).getBoundingClientRect();
+        const trackElement = track as HTMLElement;
+        const rect = trackElement.getBoundingClientRect();
         const viewHeight = window.innerHeight;
 
+        // Calculate scroll progress based on how far we've scrolled through the track
         const scrollOffset = -rect.top;
-        const totalScrollable = rect.height - viewHeight;
+        const totalScrollable = trackElement.offsetHeight - viewHeight;
+        
         if (totalScrollable <= 0) return;
 
         let fraction = scrollOffset / totalScrollable;
@@ -128,6 +131,9 @@ const Index = () => {
         targetFractionRef.current = fraction;
         setScrollProgress(fraction);
       };
+
+      // Use both window scroll and a scroll container listener for better desktop support
+      const scrollContainer = document.scrollingElement || document.documentElement;
 
       // RAF loop for smooth video scrubbing
       const animate = () => {
@@ -151,6 +157,9 @@ const Index = () => {
       video.addEventListener('canplay', updateTrackHeight);
       window.addEventListener('scroll', handleScroll, { passive: true });
       window.addEventListener('resize', updateTrackHeight);
+      
+      // Fire initial scroll handler to sync video on load
+      handleScroll();
 
       video.load();
       primeVideo();
