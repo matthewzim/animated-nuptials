@@ -3,7 +3,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Envelope from '../components/Envelope';
 import FloatingPetals from '../components/FloatingPetals';
 import { WeddingDetails } from '../components/WeddingDetails';
-import headerVideo from '../assets/Header.mp4';
+
+// Use public path for more reliable production loading
+const headerVideo = '/Header.mp4';
 
 /**
  * Main Index Page
@@ -251,7 +253,11 @@ const Index = () => {
                   src={headerVideo}
                   playsInline
                   muted
-                  preload="metadata"
+                  preload="auto"
+                  crossOrigin="anonymous"
+                  webkit-playsinline="true"
+                  x-webkit-airplay="deny"
+                  disablePictureInPicture
                   className="absolute inset-0 w-full h-full object-cover opacity-90"
                 />
                 
