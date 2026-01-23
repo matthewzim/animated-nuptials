@@ -4,8 +4,8 @@ import Envelope from '../components/Envelope';
 import FloatingPetals from '../components/FloatingPetals';
 import { WeddingDetails } from '../components/WeddingDetails';
 
-// Reference the video in the public folder
-const headerVideo = '/header.mp4';
+// Use public path for more reliable production loading
+const headerVideo = '/Header.mp4';
 
 /**
  * Main Index Page
@@ -20,208 +20,342 @@ const Index = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const scrollTrackRef = useRef<HTMLElement | null>(null);
 
-  // Use refs for values that change rapidly during scroll to avoid unnecessary re-renders
+  // Keep these out of state to avoid rerenders during scroll
   const videoDurationRef = useRef(0);
   const pendingFractionRef = useRef<number | null>(null);
   
-  // Smooth scrubbing refs using RequestAnimationFrame
+  // RAF-based smooth scrubbing refs
   const targetFractionRef = useRef(0);
   const currentFractionRef = useRef(0);
   const animationFrameRef = useRef<number | null>(null);
-  const isUnlockedRef = useRef(false);
+  const isUnlockedRef = useRef(false); // Track if video is unlocked for scrubbing
 
-  // Scrubbing configuration
+  // Configuration for the scroll scrub
   const pixelsPerSecond = 1000;
-  const lerpFactor = 0.08;
+  const lerpFactor = 0.08; // Smoothness factor (lower = smoother but slower)
 
-  /**
-   * Smooth scrubbing loop
-   */
-  const scrubLoop = () => {
-    if (!videoRef.current || !videoDurationRef.current) return;
+  // Lerp helper for smooth interpolation
+  const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
 
-    // Linear interpolation for smooth movement
-    currentFractionRef.current += (targetFractionRef.current - currentFractionRef.current) * lerpFactor;
-    const diff = Math.abs(targetFractionRef.current - currentFractionRef.current);
-    
-    // Update video current time
-    videoRef.current.currentTime = currentFractionRef.current * videoDurationRef.current;
-    
-    // Update scroll progress state for UI overlays
-    setScrollProgress(currentFractionRef.current);
-
-    if (diff > 0.0001) {
-      animationFrameRef.current = requestAnimationFrame(scrubLoop);
-    } else {
-      animationFrameRef.current = null;
+  const handleOpen = () => {
+    // Unlock video playback on first user interaction (required by mobile browsers)
+    if (videoRef.current) {
+      const video = videoRef.current;
+      video.muted = true;
+      video.playsInline = true;
+      video.play().then(() => {
+        video.pause();
+        video.currentTime = 0;
+        isUnlockedRef.current = true; // Mark as unlocked for scroll control
+      }).catch(() => {
+        // Fallback: force a frame update
+        video.currentTime = 0.001;
+        isUnlockedRef.current = true; // Still mark as unlocked
+      });
     }
+    
+    // Audio no longer auto-plays - user can start it with the music button
+    setShowEnvelope(false);
   };
 
-  /**
-   * Handle scroll events to calculate the target video fraction
-   */
-  const handleScroll = () => {
-    if (!scrollTrackRef.current || showEnvelope) return;
-
-    const rect = scrollTrackRef.current.getBoundingClientRect();
-    const scrollHeight = rect.height - window.innerHeight;
-    const scrolled = -rect.top;
-
-    if (scrollHeight <= 0) return;
-
-    const fraction = Math.max(0, Math.min(1, scrolled / scrollHeight));
-    targetFractionRef.current = fraction;
-
-    if (!animationFrameRef.current) {
-      animationFrameRef.current = requestAnimationFrame(scrubLoop);
-    }
-  };
-
-  /**
-   * Initial Setup: Manage video metadata and pre-loading
-   */
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    if (showEnvelope) return;
 
-    const handleLoadedMetadata = () => {
-      videoDurationRef.current = video.duration;
-      setIsVideoReady(true);
-      if (pendingFractionRef.current !== null) {
-        video.currentTime = pendingFractionRef.current * video.duration;
-        pendingFractionRef.current = null;
+    let rafId = 0;
+    let cleanup: (() => void) | null = null;
+
+    const initWhenMounted = () => {
+      const video = videoRef.current;
+      const track = scrollTrackRef.current;
+      if (!video || !track) {
+        rafId = window.requestAnimationFrame(initWhenMounted);
+        return;
       }
+
+      // Forces a height for the scroll track based on video duration
+      const updateTrackHeight = () => {
+        const duration = videoDurationRef.current || (Number.isFinite(video.duration) ? video.duration : 0) || 5;
+        const trackHeight = window.innerHeight + (duration * pixelsPerSecond);
+        (track as HTMLElement).style.height = `${trackHeight}px`;
+
+        // Only mark "ready" once we truly know duration
+        if ((videoDurationRef.current || video.duration) > 0) {
+          setIsVideoReady(true);
+        }
+      };
+
+      const getDuration = () => {
+        const d = videoDurationRef.current || (Number.isFinite(video.duration) ? video.duration : 0);
+        if (d > 0) return d;
+        if (video.seekable?.length) {
+          const seekableEnd = video.seekable.end(video.seekable.length - 1);
+          if (Number.isFinite(seekableEnd) && seekableEnd > 0) return seekableEnd;
+        }
+        return 0;
+      };
+
+      const syncVideoToFraction = (fraction: number) => {
+        pendingFractionRef.current = fraction;
+        // Hard guard: video must have metadata loaded
+        if (video.readyState < 1) return;
+        // Only control playback after video is unlocked
+        if (!isUnlockedRef.current) return;
+        const duration = getDuration();
+        if (!duration) return;
+        
+        const targetTime = Math.max(0, Math.min(duration - 0.05, fraction * duration));
+        
+        // Only update if there's a meaningful change to avoid excessive seeking
+        if (Math.abs(video.currentTime - targetTime) > 0.01) {
+          video.currentTime = targetTime;
+        }
+      };
+
+      const handleLoadedMetadata = () => {
+        console.log("metadata ready", { readyState: video.readyState, duration: video.duration });
+        
+        const duration = getDuration();
+        if (duration > 0) {
+          videoDurationRef.current = duration;
+        }
+
+        // Ensure we're in a paused, seekable state for scroll-scrubbing
+        video.pause();
+
+        updateTrackHeight();
+        
+        // Sync to current scroll position after metadata loads
+        handleScroll();
+
+        if (pendingFractionRef.current != null && getDuration() > 0) {
+          syncVideoToFraction(pendingFractionRef.current);
+        }
+
+        setIsVideoReady(true);
+      };
+
+      // Define handleScroll before it's used
+      const handleScroll = () => {
+        const trackElement = track as HTMLElement;
+        const rect = trackElement.getBoundingClientRect();
+        const viewHeight = window.innerHeight;
+
+        // Calculate scroll progress based on how far we've scrolled through the track
+        const scrollOffset = -rect.top;
+        const totalScrollable = trackElement.offsetHeight - viewHeight;
+        
+        if (totalScrollable <= 0) return;
+
+        let fraction = scrollOffset / totalScrollable;
+        fraction = Math.max(0, Math.min(fraction, 1));
+
+        targetFractionRef.current = fraction;
+        setScrollProgress(fraction);
+      };
+
+      const primeVideo = async () => {
+        // Skip if already unlocked by user interaction
+        if (isUnlockedRef.current) return;
+        
+        // Some browsers won't update frames on `currentTime` until the video has been "activated"
+        // Use a muted inline play which is generally allowed
+        try {
+          video.muted = true;
+          video.playsInline = true;
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+            video.pause();
+            video.currentTime = 0;
+            isUnlockedRef.current = true;
+          }
+        } catch {
+          // Autoplay blocked - that's fine, we'll still try to seek
+          // Force a frame update by setting currentTime
+          video.currentTime = 0.001;
+          setTimeout(() => {
+            video.currentTime = 0;
+            isUnlockedRef.current = true;
+          }, 50);
+        }
+      };
+
+      const unlockOnFirstInteraction = () => {
+        if (!videoRef.current || isUnlockedRef.current) return;
+
+        const video = videoRef.current;
+        video.muted = true;
+        video.playsInline = true;
+
+        video.play()
+          .then(() => {
+            video.pause();
+            video.currentTime = 0;
+            isUnlockedRef.current = true;
+          })
+          .catch(() => {
+            video.currentTime = 0.001;
+            isUnlockedRef.current = true;
+          });
+
+        window.removeEventListener("click", unlockOnFirstInteraction);
+        window.removeEventListener("wheel", unlockOnFirstInteraction);
+      };
+
+      window.addEventListener("click", unlockOnFirstInteraction, { once: true });
+      window.addEventListener("wheel", unlockOnFirstInteraction, { once: true });
+
+      // RAF loop for smooth video scrubbing
+      const animate = () => {
+        const current = currentFractionRef.current;
+        const target = targetFractionRef.current;
+        
+        // Only update if there's meaningful difference
+        if (Math.abs(target - current) > 0.0001) {
+          const newFraction = lerp(current, target, lerpFactor);
+          currentFractionRef.current = newFraction;
+          syncVideoToFraction(newFraction);
+        }
+        
+        animationFrameRef.current = requestAnimationFrame(animate);
+      };
+
+      // Attach listeners
+      video.addEventListener('loadedmetadata', handleLoadedMetadata);
+      video.addEventListener('loadeddata', handleLoadedMetadata);
+      video.addEventListener('durationchange', handleLoadedMetadata);
+      video.addEventListener('canplay', updateTrackHeight);
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('resize', updateTrackHeight);
+      
+      // Fire initial scroll handler to sync video on load
+      handleScroll();
+
+      video.load();
+      primeVideo();
+      
+      // Start the animation loop
+      animationFrameRef.current = requestAnimationFrame(animate);
+
+      if (video.readyState >= 1) {
+        handleLoadedMetadata();
+      } else {
+        updateTrackHeight();
+      }
+
+      // Always unstick the UI even if media events never fire
+      const safetyTimeout = window.setTimeout(() => setIsVideoReady(true), 3500);
+
+      cleanup = () => {
+        window.clearTimeout(safetyTimeout);
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        video.removeEventListener('loadeddata', handleLoadedMetadata);
+        video.removeEventListener('durationchange', handleLoadedMetadata);
+        video.removeEventListener('canplay', updateTrackHeight);
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('resize', updateTrackHeight);
+      };
     };
 
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    if (video.readyState >= 1) handleLoadedMetadata();
+    initWhenMounted();
 
     return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (rafId) window.cancelAnimationFrame(rafId);
+      cleanup?.();
     };
-  }, []);
-
-  /**
-   * Attach scroll listener only when the invitation is opened
-   */
-  useEffect(() => {
-    if (!showEnvelope) {
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      handleScroll(); // Check position immediately
-    }
-    return () => window.removeEventListener('scroll', handleScroll);
   }, [showEnvelope]);
-
-  /**
-   * Chrome Stability Fix:
-   * Browsers (especially Chrome) often suspend video playback in inactive tabs.
-   * This ensures the video remains "active" so currentTime updates work when the user scrolls back.
-   */
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && videoRef.current && !showEnvelope) {
-        // Calling play() clears browser-imposed suspensions on background elements
-        videoRef.current.play().catch(() => {
-          // Failure to play here is non-critical as we use currentTime for scrubbing
-        });
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [showEnvelope]);
-
-  /**
-   * Transition from Envelope to the main invitation
-   */
-  const onOpenEnvelope = () => {
-    setShowEnvelope(false);
-    
-    // Play the background music
-    if (audioRef.current) {
-      audioRef.current.play().catch(e => console.log("Audio play blocked", e));
-    }
-
-    // CRITICAL CHROME FIX: 
-    // Programmatically "unlock" the video playback. Chrome requires a user interaction 
-    // (the open click) to allow video manipulation. By calling play() and then pause(), 
-    // we signal that the video is active, allowing subsequent manual currentTime updates.
-    if (videoRef.current) {
-      videoRef.current.play()
-        .then(() => {
-          videoRef.current?.pause();
-          isUnlockedRef.current = true;
-        })
-        .catch(e => console.log("Video interaction required for scrubbing in this browser", e));
-    }
-  };
 
   return (
-    <div className="relative min-h-screen bg-stone-50 overflow-x-hidden selection:bg-rose-100 selection:text-rose-900">
-      {/* Hidden Audio Element */}
-      <audio 
-        ref={audioRef} 
-        src="/open.mp3" 
-        loop 
-        preload="auto"
-      />
+    <main className="relative min-h-screen w-full bg-[#fdf8f4]">
+      <audio ref={audioRef} loop>
+        <source src="/open.mp3" type="audio/mpeg" />
+      </audio>
+
+      {/* Video Layer */}
+      {!showEnvelope && (
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <video
+            ref={videoRef}
+            src={headerVideo}
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
 
       <AnimatePresence mode="wait">
         {showEnvelope ? (
           <motion.div
             key="envelope-view"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
-            transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#fdfbf7]"
+            exit={{ opacity: 0, scale: 1.1 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#fdf8f4]"
           >
-            <Envelope onOpen={onOpenEnvelope} />
+            <Envelope onOpen={handleOpen} />
           </motion.div>
         ) : (
-          <div key="scroll-view" className="relative w-full">
-            {/* Scroll-driven video section */}
-            <section 
-              ref={scrollTrackRef}
-              style={{ height: `${(videoDurationRef.current || 5) * pixelsPerSecond}px` }}
-              className="relative w-full"
-            >
-              <div className="sticky top-0 h-screen w-full overflow-hidden bg-stone-900">
-                <video
-                  ref={videoRef}
-                  src={headerVideo}
-                  muted
-                  playsInline
-                  autoPlay
-                  loop
-                  preload="auto"
-                  className="h-full w-full object-cover opacity-80 scale-[1.01]"
-                />
+          <div key="main-content">
+            {/* Ambient Background */}
+            <FloatingPetals />
 
-                {/* Aesthetic gradient overlays */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
+            {/* Cinematic Scrubber Section */}
+            <section ref={scrollTrackRef} className="relative w-full">
+              {/* Sticky container for scroll tracking */}
+              <div className="sticky top-0 h-screen w-full z-0 pointer-events-none" />
 
-                {/* Hero Text Content */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+              {/* Overlay Container - Also sticky to layer on top of video */}
+              <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden -mt-[100vh]">
+                
+                {/* Scroll Prompt Overlay */}
+                <div 
+                  className="absolute top-1/4 left-0 right-0 z-10 text-center pointer-events-none transition-opacity duration-700"
+                  style={{ opacity: scrollProgress < 0.05 ? 1 : 0 }}
+                >
                   <motion.div
-                    style={{ 
-                      opacity: 1 - scrollProgress * 4, // Fades out early in the scroll
-                      y: -scrollProgress * 200
-                    }}
-                    className="text-center"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    className="space-y-2"
                   >
-                    <span className="inline-block mb-4 text-xs font-light tracking-[0.4em] uppercase text-stone-200">
-                      You are cordially invited
-                    </span>
-                    <h1 className="text-5xl md:text-8xl font-thin tracking-tighter mb-4 italic">
-                      The Nuptials of
-                    </h1>
+                    <p className="text-white text-lg md:text-xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
+                      08.08.2026
+                    </p>
+                    <h2 className="text-white text-3xl md:text-5xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
+                      You're Cordially Invited
+                    </h2>
+                    <p className="text-white/70 text-sm tracking-widest animate-bounce uppercase">
+                      
+                    </p>
                   </motion.div>
                 </div>
+
+                {/* Video Loading State Overlay */}
+                <AnimatePresence>
+                  {!isVideoReady && (
+                    <motion.div 
+                      key="loading-overlay"
+                      initial={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 flex items-center justify-center bg-[#fdf8f4] z-50"
+                    >
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="w-8 h-8 border-2 border-rose-200 border-t-rose-500 rounded-full animate-spin" />
+                        <span className="text-xs uppercase tracking-widest text-stone-400">Preparing cinematic...</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </section>
 
-            {/* Main Details and RSVP area */}
-            <div className="relative z-20 bg-[#fdfbf7] shadow-[0_-20px_50px_rgba(0,0,0,0.1)]">
+            {/* Wedding Details Reveal */}
+            <div className="relative z-20 bg-[#fdf8f4] shadow-[0_-40px_60px_rgba(0,0,0,0.15)] overflow-hidden">
+              {/* Floating hearts for this section */}
               <div className="absolute inset-0 pointer-events-none z-30">
                 <FloatingPetals />
               </div>
@@ -231,7 +365,7 @@ const Index = () => {
         )}
       </AnimatePresence>
 
-      {/* Floating Music Toggle */}
+      {/* Music Control */}
       {!showEnvelope && (
         <motion.button
           initial={{ opacity: 0 }}
@@ -253,7 +387,7 @@ const Index = () => {
           </div>
         </motion.button>
       )}
-    </div>
+    </main>
   );
 };
 
