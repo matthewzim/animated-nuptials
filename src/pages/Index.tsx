@@ -43,18 +43,24 @@ const Index = () => {
       const video = videoRef.current;
       video.muted = true;
       video.playsInline = true;
+      
+      // Chrome-specific fix: Play and immediately pause to unlock seeking
       video.play().then(() => {
         video.pause();
         video.currentTime = 0;
-        isUnlockedRef.current = true; // Mark as unlocked for scroll control
-      }).catch(() => {
+        isUnlockedRef.current = true;
+        console.log("Video unlocked for scrubbing");
+      }).catch((err) => {
+        console.warn("Play failed, trying fallback:", err);
         // Fallback: force a frame update
         video.currentTime = 0.001;
-        isUnlockedRef.current = true; // Still mark as unlocked
+        setTimeout(() => {
+          video.currentTime = 0;
+          isUnlockedRef.current = true;
+        }, 100);
       });
     }
     
-    // Audio no longer auto-plays - user can start it with the music button
     setShowEnvelope(false);
   };
 
@@ -96,30 +102,50 @@ const Index = () => {
 
       const syncVideoToFraction = (fraction: number) => {
         pendingFractionRef.current = fraction;
-        // Hard guard: video must have metadata loaded
-        if (video.readyState < 1) return;
+        
+        // Chrome requires readyState >= 2 (HAVE_CURRENT_DATA) for reliable seeking
+        if (video.readyState < 2) {
+          console.log("Video not ready for seeking, readyState:", video.readyState);
+          return;
+        }
+        
         // Only control playback after video is unlocked
-        if (!isUnlockedRef.current) return;
+        if (!isUnlockedRef.current) {
+          console.log("Video not unlocked yet");
+          return;
+        }
+        
         const duration = getDuration();
-        if (!duration) return;
+        if (!duration) {
+          console.log("Duration not available yet");
+          return;
+        }
         
         const targetTime = Math.max(0, Math.min(duration - 0.05, fraction * duration));
         
-        // Only update if there's a meaningful change to avoid excessive seeking
-        if (Math.abs(video.currentTime - targetTime) > 0.01) {
-          video.currentTime = targetTime;
+        // Chrome fix: Use a slightly larger threshold to avoid excessive seeking
+        if (Math.abs(video.currentTime - targetTime) > 0.05) {
+          try {
+            video.currentTime = targetTime;
+          } catch (err) {
+            console.warn("Seek failed:", err);
+          }
         }
       };
 
       const handleLoadedMetadata = () => {
-        console.log("metadata ready", { readyState: video.readyState, duration: video.duration });
+        console.log("metadata ready", { 
+          readyState: video.readyState, 
+          duration: video.duration,
+          seekable: video.seekable?.length 
+        });
         
         const duration = getDuration();
         if (duration > 0) {
           videoDurationRef.current = duration;
         }
 
-        // Ensure we're in a paused, seekable state for scroll-scrubbing
+        // Ensure we're in a paused state
         video.pause();
 
         updateTrackHeight();
@@ -132,6 +158,17 @@ const Index = () => {
         }
 
         setIsVideoReady(true);
+      };
+
+      // Chrome-specific: Handle when enough data is loaded
+      const handleCanPlay = () => {
+        console.log("Video can play, readyState:", video.readyState);
+        updateTrackHeight();
+        
+        // Retry sync if we have a pending fraction
+        if (pendingFractionRef.current != null) {
+          syncVideoToFraction(pendingFractionRef.current);
+        }
       };
 
       // Define handleScroll before it's used
@@ -157,32 +194,36 @@ const Index = () => {
         // Skip if already unlocked by user interaction
         if (isUnlockedRef.current) return;
         
-        // Some browsers won't update frames on `currentTime` until the video has been "activated"
-        // Use a muted inline play which is generally allowed
+        console.log("Priming video for Chrome compatibility");
+        
         try {
           video.muted = true;
           video.playsInline = true;
+          
+          // Chrome requires actual play() to unlock seeking
           const playPromise = video.play();
           if (playPromise !== undefined) {
             await playPromise;
+            console.log("Video played successfully");
+            
+            // Wait a bit for Chrome to fully initialize
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
             video.pause();
             video.currentTime = 0;
             isUnlockedRef.current = true;
+            console.log("Video primed and ready for scrubbing");
           }
-        } catch {
-          // Autoplay blocked - that's fine, we'll still try to seek
-          // Force a frame update by setting currentTime
-          video.currentTime = 0.001;
-          setTimeout(() => {
-            video.currentTime = 0;
-            isUnlockedRef.current = true;
-          }, 50);
+        } catch (err) {
+          console.warn("Autoplay blocked, waiting for user interaction:", err);
+          // Don't mark as unlocked - wait for actual user interaction
         }
       };
 
       const unlockOnFirstInteraction = () => {
         if (!videoRef.current || isUnlockedRef.current) return;
 
+        console.log("Unlocking video on user interaction");
         const video = videoRef.current;
         video.muted = true;
         video.playsInline = true;
@@ -192,18 +233,27 @@ const Index = () => {
             video.pause();
             video.currentTime = 0;
             isUnlockedRef.current = true;
+            console.log("Video unlocked via user interaction");
+            
+            // Immediately sync to current scroll position
+            syncVideoToFraction(targetFractionRef.current);
           })
-          .catch(() => {
+          .catch((err) => {
+            console.warn("Play on interaction failed:", err);
             video.currentTime = 0.001;
             isUnlockedRef.current = true;
           });
 
+        // Remove all interaction listeners
         window.removeEventListener("click", unlockOnFirstInteraction);
-        window.removeEventListener("wheel", unlockOnFirstInteraction);
+        window.removeEventListener("scroll", unlockOnFirstInteraction);
+        window.removeEventListener("touchstart", unlockOnFirstInteraction);
       };
 
+      // Chrome fix: Listen for multiple interaction types
       window.addEventListener("click", unlockOnFirstInteraction, { once: true });
-      window.addEventListener("wheel", unlockOnFirstInteraction, { once: true });
+      window.addEventListener("scroll", unlockOnFirstInteraction, { once: true });
+      window.addEventListener("touchstart", unlockOnFirstInteraction, { once: true });
 
       // RAF loop for smooth video scrubbing
       const animate = () => {
@@ -220,18 +270,22 @@ const Index = () => {
         animationFrameRef.current = requestAnimationFrame(animate);
       };
 
-      // Attach listeners
+      // Attach listeners with Chrome-specific handlers
       video.addEventListener('loadedmetadata', handleLoadedMetadata);
       video.addEventListener('loadeddata', handleLoadedMetadata);
       video.addEventListener('durationchange', handleLoadedMetadata);
-      video.addEventListener('canplay', updateTrackHeight);
+      video.addEventListener('canplay', handleCanPlay);
+      video.addEventListener('canplaythrough', handleCanPlay);
       window.addEventListener('scroll', handleScroll, { passive: true });
       window.addEventListener('resize', updateTrackHeight);
       
       // Fire initial scroll handler to sync video on load
       handleScroll();
 
+      // Chrome fix: Explicitly load the video
       video.load();
+      
+      // Try to prime the video (may be blocked by autoplay policy)
       primeVideo();
       
       // Start the animation loop
@@ -244,7 +298,10 @@ const Index = () => {
       }
 
       // Always unstick the UI even if media events never fire
-      const safetyTimeout = window.setTimeout(() => setIsVideoReady(true), 3500);
+      const safetyTimeout = window.setTimeout(() => {
+        setIsVideoReady(true);
+        console.log("Safety timeout reached, showing UI");
+      }, 3500);
 
       cleanup = () => {
         window.clearTimeout(safetyTimeout);
@@ -254,9 +311,13 @@ const Index = () => {
         video.removeEventListener('loadedmetadata', handleLoadedMetadata);
         video.removeEventListener('loadeddata', handleLoadedMetadata);
         video.removeEventListener('durationchange', handleLoadedMetadata);
-        video.removeEventListener('canplay', updateTrackHeight);
+        video.removeEventListener('canplay', handleCanPlay);
+        video.removeEventListener('canplaythrough', handleCanPlay);
         window.removeEventListener('scroll', handleScroll);
         window.removeEventListener('resize', updateTrackHeight);
+        window.removeEventListener("click", unlockOnFirstInteraction);
+        window.removeEventListener("scroll", unlockOnFirstInteraction);
+        window.removeEventListener("touchstart", unlockOnFirstInteraction);
       };
     };
 
@@ -274,7 +335,7 @@ const Index = () => {
         <source src="/open.mp3" type="audio/mpeg" />
       </audio>
 
-      {/* Video Layer */}
+      {/* Video Layer - Chrome fix: add key attributes */}
       {!showEnvelope && (
         <div className="fixed inset-0 z-0 pointer-events-none">
           <video
@@ -283,7 +344,9 @@ const Index = () => {
             muted
             playsInline
             preload="auto"
+            crossOrigin="anonymous"
             className="w-full h-full object-cover"
+            style={{ willChange: 'auto' }}
           />
         </div>
       )}
@@ -329,7 +392,7 @@ const Index = () => {
                       You're Cordially Invited
                     </h2>
                     <p className="text-white/70 text-sm tracking-widest animate-bounce uppercase">
-                      
+                      Scroll to reveal
                     </p>
                   </motion.div>
                 </div>
