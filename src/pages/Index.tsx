@@ -250,6 +250,24 @@ const Index = () => {
         <source src="/open.mp3" type="audio/mpeg" />
       </audio>
 
+      {/* Video Layer - Outside AnimatePresence/Framer Motion */}
+      {!showEnvelope && (
+        <div className="fixed inset-0 z-0">
+          <video
+            ref={videoRef}
+            src={headerVideo}
+            playsInline
+            muted
+            preload="auto"
+            crossOrigin="anonymous"
+            webkit-playsinline="true"
+            x-webkit-airplay="deny"
+            disablePictureInPicture
+            className="w-full h-full object-cover opacity-90"
+          />
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
         {showEnvelope ? (
           <motion.div
@@ -268,21 +286,8 @@ const Index = () => {
 
             {/* Cinematic Scrubber Section */}
             <section ref={scrollTrackRef} className="relative w-full">
-              {/* Video Layer - Sticky positioning */}
-              <div className="sticky top-0 h-screen w-full z-0 pointer-events-none">
-                <video
-                  ref={videoRef}
-                  src={headerVideo}
-                  playsInline
-                  muted
-                  preload="auto"
-                  crossOrigin="anonymous"
-                  webkit-playsinline="true"
-                  x-webkit-airplay="deny"
-                  disablePictureInPicture
-                  className="w-full h-full object-cover opacity-90"
-                />
-              </div>
+              {/* Sticky container for scroll tracking */}
+              <div className="sticky top-0 h-screen w-full z-0 pointer-events-none" />
 
               {/* Overlay Container - Also sticky to layer on top of video */}
               <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden -mt-[100vh]">
