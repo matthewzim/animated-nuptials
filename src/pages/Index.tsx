@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Envelope from '../components/Envelope';
 import FloatingPetals from '../components/FloatingPetals';
-import WeddingDetails from '../components/WeddingDetails';
+import { WeddingDetails } from '../components/WeddingDetails';
 
 // Reference the video in the public folder
 const headerVideo = '/header.mp4';
