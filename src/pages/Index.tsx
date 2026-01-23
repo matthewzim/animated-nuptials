@@ -28,6 +28,7 @@ const Index = () => {
   const targetFractionRef = useRef(0);
   const currentFractionRef = useRef(0);
   const animationFrameRef = useRef<number | null>(null);
+  const isUnlockedRef = useRef(false); // Track if video is unlocked for scrubbing
 
   // Configuration for the scroll scrub
   const pixelsPerSecond = 1000;
@@ -45,9 +46,11 @@ const Index = () => {
       video.play().then(() => {
         video.pause();
         video.currentTime = 0;
+        isUnlockedRef.current = true; // Mark as unlocked for scroll control
       }).catch(() => {
         // Fallback: force a frame update
         video.currentTime = 0.001;
+        isUnlockedRef.current = true; // Still mark as unlocked
       });
     }
     
@@ -93,6 +96,8 @@ const Index = () => {
 
       const syncVideoToFraction = (fraction: number) => {
         pendingFractionRef.current = fraction;
+        // Only control playback after video is unlocked
+        if (!isUnlockedRef.current) return;
         const duration = getDuration();
         if (!duration) return;
         
@@ -145,6 +150,9 @@ const Index = () => {
       };
 
       const primeVideo = async () => {
+        // Skip if already unlocked by user interaction
+        if (isUnlockedRef.current) return;
+        
         // Some browsers won't update frames on `currentTime` until the video has been "activated"
         // Use a muted inline play which is generally allowed
         try {
@@ -155,6 +163,7 @@ const Index = () => {
             await playPromise;
             video.pause();
             video.currentTime = 0;
+            isUnlockedRef.current = true;
           }
         } catch {
           // Autoplay blocked - that's fine, we'll still try to seek
@@ -162,6 +171,7 @@ const Index = () => {
           video.currentTime = 0.001;
           setTimeout(() => {
             video.currentTime = 0;
+            isUnlockedRef.current = true;
           }, 50);
         }
       };
