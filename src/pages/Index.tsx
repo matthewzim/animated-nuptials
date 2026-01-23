@@ -250,9 +250,9 @@ const Index = () => {
         <source src="/open.mp3" type="audio/mpeg" />
       </audio>
 
-      {/* Video Layer - Outside AnimatePresence/Framer Motion */}
+      {/* Video Layer - Absolute positioning, controlled by sticky scroll */}
       {!showEnvelope && (
-        <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 z-0">
           <video
             ref={videoRef}
             src={headerVideo}
