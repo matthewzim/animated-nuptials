@@ -258,30 +258,29 @@ const Index = () => {
             <Envelope onOpen={handleOpen} />
           </motion.div>
         ) : (
-          <motion.div
-            key="main-content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
+          <div key="main-content">
             {/* Ambient Background */}
             <FloatingPetals />
 
+            {/* Video Layer - Outside transformed containers */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+              <video
+                ref={videoRef}
+                src={headerVideo}
+                playsInline
+                muted
+                preload="auto"
+                crossOrigin="anonymous"
+                webkit-playsinline="true"
+                x-webkit-airplay="deny"
+                disablePictureInPicture
+                className="w-full h-full object-cover opacity-90"
+              />
+            </div>
+
             {/* Cinematic Scrubber Section */}
             <section ref={scrollTrackRef} className="relative w-full">
-              <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden bg-black">
-                <video
-                  ref={videoRef}
-                  src={headerVideo}
-                  playsInline
-                  muted
-                  preload="auto"
-                  crossOrigin="anonymous"
-                  webkit-playsinline="true"
-                  x-webkit-airplay="deny"
-                  disablePictureInPicture
-                  className="absolute inset-0 w-full h-full object-cover opacity-90"
-                />
+              <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden bg-black/50">
                 
                 {/* Scroll Prompt Overlay */}
                 <div 
@@ -332,7 +331,7 @@ const Index = () => {
               </div>
               <WeddingDetails isVisible={!showEnvelope} />
             </div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
