@@ -180,6 +180,30 @@ const Index = () => {
         }
       };
 
+      const unlockOnFirstInteraction = () => {
+        if (!videoRef.current || isUnlockedRef.current) return;
+
+        const video = videoRef.current;
+        video.muted = true;
+        video.playsInline = true;
+
+        video.play()
+          .then(() => {
+            video.pause();
+            video.currentTime = 0;
+            isUnlockedRef.current = true;
+          })
+          .catch(() => {
+            video.currentTime = 0.001;
+            isUnlockedRef.current = true;
+          });
+
+        window.removeEventListener("click", unlockOnFirstInteraction);
+        window.removeEventListener("wheel", unlockOnFirstInteraction);
+      };
+
+      window.addEventListener("click", unlockOnFirstInteraction, { once: true });
+      window.addEventListener("wheel", unlockOnFirstInteraction, { once: true });
 
       // RAF loop for smooth video scrubbing
       const animate = () => {
