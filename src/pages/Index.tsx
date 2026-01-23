@@ -5,7 +5,7 @@ import FloatingPetals from '../components/FloatingPetals';
 import { WeddingDetails } from '../components/WeddingDetails';
 
 // Use public path for more reliable production loading
-const headerVideo = '/public/Header_chrome.mp4';
+const headerVideo = '/Header_chrome.mp4';
 
 /**
  * Main Index Page
