@@ -37,6 +37,20 @@ const Index = () => {
   const lerp = (start: number, end: number, factor: number) => start + (end - start) * factor;
 
   const handleOpen = () => {
+    // Unlock video playback on first user interaction (required by mobile browsers)
+    if (videoRef.current) {
+      const video = videoRef.current;
+      video.muted = true;
+      video.playsInline = true;
+      video.play().then(() => {
+        video.pause();
+        video.currentTime = 0;
+      }).catch(() => {
+        // Fallback: force a frame update
+        video.currentTime = 0.001;
+      });
+    }
+    
     // Audio no longer auto-plays - user can start it with the music button
     setShowEnvelope(false);
   };
