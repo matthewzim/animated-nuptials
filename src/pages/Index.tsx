@@ -96,6 +96,8 @@ const Index = () => {
 
       const syncVideoToFraction = (fraction: number) => {
         pendingFractionRef.current = fraction;
+        // Hard guard: video must have metadata loaded
+        if (video.readyState < 1) return;
         // Only control playback after video is unlocked
         if (!isUnlockedRef.current) return;
         const duration = getDuration();
@@ -110,6 +112,8 @@ const Index = () => {
       };
 
       const handleLoadedMetadata = () => {
+        console.log("metadata ready", { readyState: video.readyState, duration: video.duration });
+        
         const duration = getDuration();
         if (duration > 0) {
           videoDurationRef.current = duration;
