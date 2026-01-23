@@ -250,20 +250,16 @@ const Index = () => {
         <source src="/open.mp3" type="audio/mpeg" />
       </audio>
 
-      {/* Video Layer - Absolute positioning, controlled by sticky scroll */}
+      {/* Video Layer */}
       {!showEnvelope && (
-        <div className="absolute inset-0 z-0">
+        <div className="fixed inset-0 z-0 pointer-events-none">
           <video
             ref={videoRef}
             src={headerVideo}
-            playsInline
             muted
+            playsInline
             preload="auto"
-            crossOrigin="anonymous"
-            webkit-playsinline="true"
-            x-webkit-airplay="deny"
-            disablePictureInPicture
-            className="w-full h-full object-cover opacity-90"
+            className="w-full h-full object-cover"
           />
         </div>
       )}
