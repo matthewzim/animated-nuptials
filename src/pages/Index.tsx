@@ -1,25 +1,30 @@
 import React, { useState, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import Envelope from '../components/Envelope';
 import { WeddingDetails } from '../components/WeddingDetails';
 
 const headerVideo = '/Header_chrome.mp4';
 
 /**
  * Main Index Page
- * Shows video intro first, then transitions to wedding details on click.
+ * 3-stage flow: Envelope → Video → Wedding Details
  */
 const Index = () => {
-  const [showIntro, setShowIntro] = useState(true);
+  const [stage, setStage] = useState<'envelope' | 'video' | 'details'>('envelope');
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handleContinue = () => {
-    setShowIntro(false);
+  const handleEnvelopeOpen = () => {
+    setStage('video');
     
     // Start background music
     if (audioRef.current) {
       audioRef.current.muted = false;
       audioRef.current.play().catch(console.error);
     }
+  };
+
+  const handleContinue = () => {
+    setStage('details');
   };
 
   return (
@@ -29,10 +34,25 @@ const Index = () => {
       </audio>
 
       <AnimatePresence mode="wait">
-        {showIntro ? (
+        {/* Stage 1: Envelope */}
+        {stage === 'envelope' && (
           <motion.div
-            key="intro-view"
+            key="envelope-view"
             initial={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#fdf8f4]"
+          >
+            <Envelope onOpen={handleEnvelopeOpen} />
+          </motion.div>
+        )}
+
+        {/* Stage 2: Video Intro */}
+        {stage === 'video' && (
+          <motion.div
+            key="video-view"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}
             className="fixed inset-0 z-[100] cursor-pointer"
@@ -74,17 +94,19 @@ const Index = () => {
               </div>
             </motion.div>
 
-            {/* Subtle gradient overlay for better text readability */}
+            {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 pointer-events-none" />
           </motion.div>
-        ) : (
+        )}
+
+        {/* Stage 3: Wedding Details */}
+        {stage === 'details' && (
           <motion.div
-            key="main-content"
+            key="details-view"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            {/* Wedding Details - Full Screen */}
             <div className="relative z-20 bg-[#fdf8f4]">
               <WeddingDetails isVisible={true} />
             </div>
@@ -93,7 +115,7 @@ const Index = () => {
       </AnimatePresence>
 
       {/* Music Control Button */}
-      {!showIntro && (
+      {stage !== 'envelope' && (
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.6 }}
