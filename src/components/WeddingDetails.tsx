@@ -1,4 +1,3 @@
-import { Calendar, MapPin, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollPhotoSlideshow } from "./ScrollPhotoSlideshow";
 
@@ -9,20 +8,14 @@ interface WeddingDetailsProps {
 export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
   const details = [
     {
-      icon: Calendar,
-      title: "The Date",
       content: "August 8th, 2026",
       delay: "0.2s",
     },
     {
-      icon: Clock,
-      title: "The Time",
-      content: "1:00 PM Arrival",
+      content: "2:30 PM Arrival",
       delay: "0.4s",
     },
     {
-      icon: MapPin,
-      title: "Ceremony & Reception",
       content: "UBC Botanical Garden",
       subContent: "6804 SW Marine Dr, Vancouver, BC V6T 2J9",
       delay: "0.6s",
@@ -75,23 +68,15 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                 animationFillMode: "both"
               }}
             >
-              <div className="flex items-start gap-4">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/20 flex-shrink-0">
-                  <detail.icon className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <div>
-                  <h4 className="font-serif text-sm tracking-widest uppercase text-muted-foreground mb-2">
-                    {detail.title}
-                  </h4>
-                  <p className="font-elegant text-xl text-foreground">
-                    {detail.content}
+              <div>
+                <p className="font-elegant text-xl text-foreground">
+                  {detail.content}
+                </p>
+                {detail.subContent && (
+                  <p className="font-elegant text-sm text-muted-foreground mt-1">
+                    {detail.subContent}
                   </p>
-                  {detail.subContent && (
-                    <p className="font-elegant text-sm text-muted-foreground mt-1">
-                      {detail.subContent}
-                    </p>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           ))}
