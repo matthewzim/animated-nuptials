@@ -34,20 +34,17 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
   return (
     <div className="w-full relative">
       {/* Two Column Layout - Full Width */}
-      <div className="flex flex-col lg:flex-row">
-        {/* Left: Fixed Photo Slideshow */}
+      <div className="grid lg:grid-cols-2 min-h-screen">
+        {/* Left: Sticky Photo Slideshow - stays in place while scrolling through details */}
         <div 
-          className="animate-fade-in-up lg:fixed lg:left-0 lg:top-0 lg:w-1/2 h-screen"
+          className="animate-fade-in-up lg:sticky lg:top-0 h-screen hidden lg:block"
           style={{ animationDelay: "0.2s", animationFillMode: "both" }}
         >
           <ScrollPhotoSlideshow />
         </div>
 
-        {/* Spacer for fixed left column on desktop */}
-        <div className="hidden lg:block lg:w-1/2 flex-shrink-0" />
-
-        {/* Right: Scrollable Wedding Details */}
-        <div className="lg:w-1/2 space-y-8 px-8 lg:px-12 py-16">
+        {/* Right: Wedding Details */}
+        <div className="space-y-8 px-8 lg:px-12 py-16">
           {/* Header - Now on right side */}
           <div 
             className="text-center lg:text-left mb-8 animate-fade-in-up"
