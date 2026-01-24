@@ -32,32 +32,31 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
   if (!isVisible) return null;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-16">
-      {/* Header */}
-      <div 
-        className="text-center mb-16 animate-fade-in-up"
-        style={{ animationDelay: "0.1s" }}
-      >
-        <p className="font-elegant text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
-          The Wedding Of
-        </p>
-        <h3 className="font-script text-5xl md:text-6xl text-stone-600">
-          Matthew & Morgan
-        </h3>
-      </div>
-
-      {/* Two Column Layout */}
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-        {/* Left: Photo Slideshow */}
+    <div className="w-full">
+      {/* Two Column Layout - Full Width */}
+      <div className="grid lg:grid-cols-2 min-h-screen">
+        {/* Left: Full-height Photo Slideshow */}
         <div 
-          className="animate-fade-in-up sticky top-8"
+          className="animate-fade-in-up sticky top-0 h-screen"
           style={{ animationDelay: "0.2s", animationFillMode: "both" }}
         >
           <ScrollPhotoSlideshow />
         </div>
 
         {/* Right: Wedding Details */}
-        <div className="space-y-8">
+        <div className="space-y-8 px-8 lg:px-12 py-16">
+          {/* Header - Now on right side */}
+          <div 
+            className="text-center lg:text-left mb-8 animate-fade-in-up"
+            style={{ animationDelay: "0.1s" }}
+          >
+            <p className="font-elegant text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
+              The Wedding Of
+            </p>
+            <h3 className="font-script text-5xl md:text-6xl text-stone-600">
+              Matthew & Morgan
+            </h3>
+          </div>
           {details.map((detail, index) => (
             <div
               key={index}
@@ -119,17 +118,17 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
               Please respond by May 1st, 2026.
             </p>
           </div>
-        </div>
-      </div>
 
-      {/* Footer message */}
-      <div 
-        className="mt-20 pb-12 text-center animate-fade-in-up"
-        style={{ animationDelay: "1s", animationFillMode: "both" }}
-      >
-        <p className="font-script text-2xl text-dusty-rose">
-          We can't wait to celebrate with you.
-        </p>
+          {/* Footer message */}
+          <div 
+            className="mt-12 text-center lg:text-left animate-fade-in-up"
+            style={{ animationDelay: "1s", animationFillMode: "both" }}
+          >
+            <p className="font-script text-2xl text-dusty-rose">
+              We can't wait to celebrate with you.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
