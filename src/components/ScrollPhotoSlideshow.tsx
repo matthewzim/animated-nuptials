@@ -53,18 +53,24 @@ export const ScrollPhotoSlideshow = () => {
       ref={containerRef}
       className="relative w-full h-full overflow-hidden bg-muted/30"
     >
-      <AnimatePresence mode="wait">
+      {/* Render all photos stacked, only current one is visible */}
+      {photos.map((photo, index) => (
         <motion.img
-          key={currentIndex}
-          src={photos[currentIndex]}
-          alt={`Wedding photo ${currentIndex + 1}`}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          key={index}
+          src={photo}
+          alt={`Wedding photo ${index + 1}`}
+          initial={false}
+          animate={{ 
+            opacity: index === currentIndex ? 1 : 0,
+            scale: index === currentIndex ? 1 : 1.05
+          }}
+          transition={{ 
+            duration: 0.8, 
+            ease: [0.4, 0, 0.2, 1]
+          }}
           className="absolute inset-0 w-full h-full object-cover"
         />
-      </AnimatePresence>
+      ))}
       
       {/* Photo indicator dots */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
