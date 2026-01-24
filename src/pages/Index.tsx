@@ -1,23 +1,19 @@
 import React, { useState, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Envelope from '../components/Envelope';
 import { WeddingDetails } from '../components/WeddingDetails';
 
 const headerVideo = '/Header_chrome.mp4';
 
 /**
  * Main Index Page
- * Coordinates the transition between the Envelope, autoplay Video, and Wedding Details.
+ * Shows video intro first, then transitions to wedding details on click.
  */
 const Index = () => {
-  const [showEnvelope, setShowEnvelope] = useState(true);
-  const [showOverlayText, setShowOverlayText] = useState(false);
-
+  const [showIntro, setShowIntro] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handleOpen = () => {
-    setShowEnvelope(false);
-    setShowOverlayText(true);
+  const handleContinue = () => {
+    setShowIntro(false);
     
     // Start background music
     if (audioRef.current) {
@@ -26,7 +22,6 @@ const Index = () => {
     }
   };
 
-
   return (
     <main className="relative min-h-screen w-full bg-[#fdf8f4]">
       <audio ref={audioRef} loop muted>
@@ -34,65 +29,71 @@ const Index = () => {
       </audio>
 
       <AnimatePresence mode="wait">
-        {showEnvelope ? (
+        {showIntro ? (
           <motion.div
-            key="envelope-view"
+            key="intro-view"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#fdf8f4]"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+            className="fixed inset-0 z-[100] cursor-pointer"
+            onClick={handleContinue}
           >
-            <Envelope onOpen={handleOpen} />
+            {/* Full-screen Video */}
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+            >
+              <source src={headerVideo} type="video/mp4" />
+            </video>
+
+            {/* Overlay Text */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+              className="absolute inset-0 flex items-center justify-center z-10"
+            >
+              <div className="text-center space-y-4">
+                <p className="text-white text-lg md:text-xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
+                  08.08.2026
+                </p>
+                <h2 className="text-white text-3xl md:text-5xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
+                  You're Cordially Invited
+                </h2>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="text-white/90 text-sm md:text-base font-light tracking-[0.2em] uppercase mt-8 drop-shadow-lg"
+                >
+                  Click to Continue
+                </motion.p>
+              </div>
+            </motion.div>
+
+            {/* Subtle gradient overlay for better text readability */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 pointer-events-none" />
           </motion.div>
         ) : (
-          <div key="main-content">
-            {/* Video Section */}
-            <section className="relative w-full h-screen">
-              <div className="fixed inset-0 z-0">
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-full object-cover"
-                >
-                  <source src={headerVideo} type="video/mp4" />
-                </video>
-              </div>
-
-              {/* Overlay Text with Fade In/Out */}
-              <AnimatePresence>
-                {showOverlayText && (
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -10, opacity: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="absolute top-1/4 left-0 right-0 z-10 text-center pointer-events-none"
-                  >
-                    <div className="space-y-2">
-                      <p className="text-white text-lg md:text-xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
-                        08.08.2026
-                      </p>
-                      <h2 className="text-white text-3xl md:text-5xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
-                        You're Cordially Invited
-                      </h2>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </section>
-
-            {/* Wedding Details */}
-            <div className="relative z-20 bg-[#fdf8f4] shadow-[0_-40px_60px_rgba(0,0,0,0.15)] overflow-hidden">
-              <WeddingDetails isVisible={!showEnvelope} />
+          <motion.div
+            key="main-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            {/* Wedding Details - Full Screen */}
+            <div className="relative z-20 bg-[#fdf8f4]">
+              <WeddingDetails isVisible={true} />
             </div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* Music Control Button */}
-      {!showEnvelope && (
+      {!showIntro && (
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.6 }}
