@@ -93,10 +93,79 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             </div>
           ))}
 
+          {/* Timeline Section */}
+          <div 
+            className="animate-fade-in-up p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50"
+            style={{ animationDelay: "0.8s", animationFillMode: "both" }}
+          >
+            <h4 className="font-serif text-sm tracking-widest uppercase text-muted-foreground mb-6">
+              Timeline
+            </h4>
+            <div className="space-y-4">
+              {[
+                { time: "2:30 PM", event: "Arrival" },
+                { time: "3:00 PM", event: "Ceremony" },
+                { time: "4:00 PM", event: "Cocktail Hour" },
+                { time: "5:30 PM", event: "Reception" },
+              ].map((item, index) => (
+                <div key={index} className="flex items-center gap-4">
+                  <span className="font-elegant text-lg text-primary min-w-[80px]">{item.time}</span>
+                  <span className="font-elegant text-lg text-foreground">{item.event}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* FAQ Section */}
+          <div 
+            className="animate-fade-in-up"
+            style={{ animationDelay: "1s", animationFillMode: "both" }}
+          >
+            <h4 className="font-serif text-sm tracking-widest uppercase text-muted-foreground mb-6">
+              FAQ
+            </h4>
+            <div className="space-y-6">
+              {[
+                {
+                  question: "Dress Code",
+                  answer: "We invite you to wear cocktail attire and embrace bright, cheerful summer colours."
+                },
+                {
+                  question: "Parking",
+                  answer: "Please note that parking at the venue is very limited and will be reserved for setup assistance. Consider parking at Thunderbird Stadium or throughout UBC campus. We encourage guests to carpool or Uber where possible."
+                },
+                {
+                  question: "Am I allowed to bring a plus one?",
+                  answer: "We kindly ask that you bring only the guest(s) specified on your invitation."
+                },
+                {
+                  question: "What time should I arrive at your wedding ceremony?",
+                  answer: "We recommend arriving by 2:30PM to give yourself plenty of time to settle in before the ceremony starts at 3PM. We can't wait to see you there!"
+                },
+                {
+                  question: "Will your wedding be indoors or outdoors?",
+                  answer: "Our wedding ceremony will be held outdoors, rain or shine. Please come prepared for the weather. If it should rain, umbrellas will be provided to guests. Our reception will be a combination of both indoor and outdoor areas."
+                },
+              ].map((faq, index) => (
+                <div 
+                  key={index} 
+                  className="p-5 rounded-lg bg-card/30 backdrop-blur-sm border border-border/50"
+                >
+                  <h5 className="font-serif text-base text-foreground mb-2">
+                    {faq.question}
+                  </h5>
+                  <p className="font-elegant text-sm text-muted-foreground leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* RSVP Section */}
           <div 
             className="mt-12 text-center animate-fade-in-up p-8 rounded-lg bg-card/30 backdrop-blur-sm border border-border/50"
-            style={{ animationDelay: "0.8s", animationFillMode: "both" }}
+            style={{ animationDelay: "1.2s", animationFillMode: "both" }}
           >
             <p className="font-elegant text-muted-foreground mb-6">
               We would be honored by your presence
