@@ -20,16 +20,27 @@ const Index = () => {
   const handleOpen = () => {
     setShowEnvelope(false);
     
-    // Start video and audio playback with sound
+    // Start video and audio playback
     setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current.muted = false;
-        videoRef.current.play().catch(console.error);
+      const video = videoRef.current;
+      const audio = audioRef.current;
+      
+      if (video) {
+        // Must start muted to satisfy autoplay policy, then unmute
+        video.muted = true;
+        video.play()
+          .then(() => {
+            // Unmute after playback starts
+            video.muted = false;
+          })
+          .catch(console.error);
       }
-      if (audioRef.current) {
-        audioRef.current.muted = false;
-        audioRef.current.play().catch(console.error);
+      
+      if (audio) {
+        audio.muted = false;
+        audio.play().catch(console.error);
       }
+      
       // Show overlay text with fade in
       setShowOverlayText(true);
       
