@@ -41,13 +41,8 @@ const Index = () => {
         audio.play().catch(console.error);
       }
       
-      // Show overlay text with fade in
+      // Show overlay text with fade in (stays visible)
       setShowOverlayText(true);
-      
-      // Hide overlay text after 10 seconds
-      setTimeout(() => {
-        setShowOverlayText(false);
-      }, 10000);
     }, 100);
   };
 
