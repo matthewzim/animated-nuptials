@@ -23,27 +23,15 @@ export const ScrollPhotoSlideshow = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const detailsContent = document.querySelector('[data-details-content]');
+    if (!detailsContent) return;
+
     const handleScroll = () => {
-      if (!containerRef.current) return;
+      const scrollTop = detailsContent.scrollTop;
+      const scrollHeight = detailsContent.scrollHeight - detailsContent.clientHeight;
       
-      // Find the wedding details container and the right-side content
-      const weddingDetails = document.querySelector('[data-wedding-details]');
-      const detailsContent = document.querySelector('[data-details-content]');
-      if (!weddingDetails || !detailsContent) return;
-      
-      const detailsRect = weddingDetails.getBoundingClientRect();
-      const contentRect = detailsContent.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      
-      // Calculate scroll progress based on how much of the right content has scrolled
-      // Start from when wedding details section enters viewport
-      const scrollStart = detailsRect.top;
-      const scrollEnd = contentRect.height - viewportHeight;
-      
-      // Progress from 0 (just entered) to 1 (scrolled through all content)
-      const scrollProgress = Math.max(0, Math.min(1, 
-        -scrollStart / scrollEnd
-      ));
+      // Progress from 0 to 1 based on scroll position within the right column
+      const scrollProgress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
       
       // Map scroll progress to photo index
       const newIndex = Math.min(
@@ -54,10 +42,10 @@ export const ScrollPhotoSlideshow = () => {
       setCurrentIndex(newIndex);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    detailsContent.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Initial check
     
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => detailsContent.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (

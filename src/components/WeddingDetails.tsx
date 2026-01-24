@@ -32,19 +32,22 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
   if (!isVisible) return null;
 
   return (
-    <div className="w-full relative" data-wedding-details>
-      {/* Two Column Layout */}
-      <div className="flex flex-col lg:flex-row">
-        {/* Left: Sticky Photo Slideshow - stays fixed while scrolling through details */}
+    <div className="w-full h-screen overflow-hidden" data-wedding-details>
+      {/* Two Column Layout - Fixed height, no page scroll */}
+      <div className="flex flex-col lg:flex-row h-full">
+        {/* Left: Fixed Photo Slideshow */}
         <div 
-          className="animate-fade-in-up lg:sticky lg:top-0 lg:self-start lg:w-1/2 h-[50vh] lg:h-screen flex-shrink-0"
+          className="animate-fade-in-up lg:w-1/2 h-[50vh] lg:h-full flex-shrink-0"
           style={{ animationDelay: "0.2s", animationFillMode: "both" }}
         >
           <ScrollPhotoSlideshow />
         </div>
 
-        {/* Right: Scrollable Wedding Details */}
-        <div className="lg:w-1/2 space-y-8 px-8 lg:px-12 py-16" data-details-content>
+        {/* Right: Scrollable Wedding Details - only this column scrolls */}
+        <div 
+          className="lg:w-1/2 h-[50vh] lg:h-full overflow-y-auto space-y-8 px-8 lg:px-12 py-16" 
+          data-details-content
+        >
           {/* Header - Now on right side */}
           <div 
             className="text-center lg:text-left mb-8 animate-fade-in-up"
