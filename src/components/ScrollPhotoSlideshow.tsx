@@ -26,14 +26,19 @@ export const ScrollPhotoSlideshow = () => {
     const handleScroll = () => {
       if (!containerRef.current) return;
       
-      const rect = containerRef.current.getBoundingClientRect();
-      const containerTop = rect.top;
-      const containerHeight = rect.height;
+      // Get the parent container (the wedding details section) for scroll calculation
+      const parent = containerRef.current.closest('.grid');
+      if (!parent) return;
+      
+      const parentRect = parent.getBoundingClientRect();
+      const parentTop = parentRect.top;
+      const parentHeight = parentRect.height;
       const viewportHeight = window.innerHeight;
       
-      // Calculate scroll progress through the container
+      // Calculate scroll progress through the entire parent container
+      // This makes photos change based on scrolling through all the content
       const scrollProgress = Math.max(0, Math.min(1, 
-        (viewportHeight - containerTop) / (containerHeight + viewportHeight)
+        -parentTop / (parentHeight - viewportHeight)
       ));
       
       // Map scroll progress to photo index
