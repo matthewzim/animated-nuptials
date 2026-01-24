@@ -33,10 +33,10 @@ const Index = () => {
       // Show overlay text with fade in
       setShowOverlayText(true);
       
-      // Hide overlay text after 5 seconds
+      // Hide overlay text after 10 seconds
       setTimeout(() => {
         setShowOverlayText(false);
-      }, 5000);
+      }, 10000);
     }, 100);
   };
 
