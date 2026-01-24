@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Envelope from '../components/Envelope';
-import FloatingPetals from '../components/FloatingPetals';
 import { WeddingDetails } from '../components/WeddingDetails';
 
 const headerVideo = '/Header_chrome.mp4';
@@ -66,8 +65,6 @@ const Index = () => {
           </motion.div>
         ) : (
           <div key="main-content">
-            <FloatingPetals />
-
             {/* Video Section */}
             <section className="relative w-full h-screen">
               <div className="fixed inset-0 z-0">
@@ -106,9 +103,6 @@ const Index = () => {
 
             {/* Wedding Details */}
             <div className="relative z-20 bg-[#fdf8f4] shadow-[0_-40px_60px_rgba(0,0,0,0.15)] overflow-hidden">
-              <div className="absolute inset-0 pointer-events-none z-30">
-                <FloatingPetals />
-              </div>
               <WeddingDetails isVisible={!showEnvelope} />
             </div>
           </div>
