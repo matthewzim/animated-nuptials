@@ -46,7 +46,7 @@ export const ScrollPhotoSlideshow = () => {
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-full min-h-[500px] rounded-lg overflow-hidden bg-muted/30"
+      className="relative w-full h-full overflow-hidden bg-muted/30"
     >
       <AnimatePresence mode="wait">
         <motion.img
