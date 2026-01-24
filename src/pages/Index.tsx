@@ -12,7 +12,7 @@ const headerVideo = '/Header_chrome.mp4';
  */
 const Index = () => {
   const [showEnvelope, setShowEnvelope] = useState(true);
-  const [videoEnded, setVideoEnded] = useState(false);
+  const [showOverlayText, setShowOverlayText] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -30,12 +30,16 @@ const Index = () => {
         audioRef.current.muted = false;
         audioRef.current.play().catch(console.error);
       }
+      // Show overlay text with fade in
+      setShowOverlayText(true);
+      
+      // Hide overlay text after 5 seconds
+      setTimeout(() => {
+        setShowOverlayText(false);
+      }, 5000);
     }, 100);
   };
 
-  const handleVideoEnd = () => {
-    setVideoEnded(true);
-  };
 
   return (
     <main className="relative min-h-screen w-full bg-[#fdf8f4]">
@@ -65,29 +69,33 @@ const Index = () => {
                   ref={videoRef}
                   muted
                   playsInline
-                  onEnded={handleVideoEnd}
                   className="w-full h-full object-cover"
                 >
                   <source src={headerVideo} type="video/mp4" />
                 </video>
               </div>
 
-              {/* Overlay Text */}
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: videoEnded ? 0 : 1 }}
-                transition={{ duration: 0.7 }}
-                className="absolute top-1/4 left-0 right-0 z-10 text-center pointer-events-none"
-              >
-                <div className="space-y-2">
-                  <p className="text-white text-lg md:text-xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
-                    08.08.2026
-                  </p>
-                  <h2 className="text-white text-3xl md:text-5xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
-                    You're Cordially Invited
-                  </h2>
-                </div>
-              </motion.div>
+              {/* Overlay Text with Fade In/Out */}
+              <AnimatePresence>
+                {showOverlayText && (
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -10, opacity: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="absolute top-1/4 left-0 right-0 z-10 text-center pointer-events-none"
+                  >
+                    <div className="space-y-2">
+                      <p className="text-white text-lg md:text-xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
+                        08.08.2026
+                      </p>
+                      <h2 className="text-white text-3xl md:text-5xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
+                        You're Cordially Invited
+                      </h2>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </section>
 
             {/* Wedding Details */}
