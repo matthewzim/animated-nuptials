@@ -32,7 +32,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
   if (!isVisible) return null;
 
   return (
-    <div className="w-full relative">
+    <div className="w-full relative" data-wedding-details>
       {/* Two Column Layout */}
       <div className="flex flex-col lg:flex-row">
         {/* Left: Sticky Photo Slideshow - stays fixed while scrolling through details */}
@@ -44,7 +44,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
         </div>
 
         {/* Right: Scrollable Wedding Details */}
-        <div className="lg:w-1/2 space-y-8 px-8 lg:px-12 py-16">
+        <div className="lg:w-1/2 space-y-8 px-8 lg:px-12 py-16" data-details-content>
           {/* Header - Now on right side */}
           <div 
             className="text-center lg:text-left mb-8 animate-fade-in-up"
