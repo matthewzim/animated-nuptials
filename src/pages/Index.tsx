@@ -14,35 +14,16 @@ const Index = () => {
   const [showOverlayText, setShowOverlayText] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const handleOpen = () => {
     setShowEnvelope(false);
+    setShowOverlayText(true);
     
-    // Start video and audio playback
-    setTimeout(() => {
-      const video = videoRef.current;
-      const audio = audioRef.current;
-      
-      if (video) {
-        // Must start muted to satisfy autoplay policy, then unmute
-        video.muted = true;
-        video.play()
-          .then(() => {
-            // Unmute after playback starts
-            video.muted = false;
-          })
-          .catch(console.error);
-      }
-      
-      if (audio) {
-        audio.muted = false;
-        audio.play().catch(console.error);
-      }
-      
-      // Show overlay text with fade in (stays visible)
-      setShowOverlayText(true);
-    }, 100);
+    // Start background music
+    if (audioRef.current) {
+      audioRef.current.muted = false;
+      audioRef.current.play().catch(console.error);
+    }
   };
 
 
@@ -69,8 +50,9 @@ const Index = () => {
             <section className="relative w-full h-screen">
               <div className="fixed inset-0 z-0">
                 <video
-                  ref={videoRef}
+                  autoPlay
                   muted
+                  loop
                   playsInline
                   className="w-full h-full object-cover"
                 >
