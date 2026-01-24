@@ -1,13 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Placeholder photos - replace with actual wedding photos
+// Import photos
+import parisPhoto from '@/assets/photos/paris.jpeg';
+import annecyPhoto from '@/assets/photos/annecy.jpeg';
+import engagementPhoto from '@/assets/photos/engagement.jpeg';
+import beachSunsetPhoto from '@/assets/photos/beach-sunset.jpeg';
+import mountainsPhoto from '@/assets/photos/mountains.jpeg';
+import netherlandsPhoto from '@/assets/photos/netherlands.jpeg';
+
 const photos = [
-  'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&auto=format&fit=crop',
+  engagementPhoto,
+  parisPhoto,
+  annecyPhoto,
+  beachSunsetPhoto,
+  mountainsPhoto,
+  netherlandsPhoto,
 ];
 
 export const ScrollPhotoSlideshow = () => {
