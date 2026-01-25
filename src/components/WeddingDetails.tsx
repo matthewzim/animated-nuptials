@@ -1,11 +1,13 @@
 import { cn } from "@/lib/utils";
 import { ScrollPhotoSlideshow } from "./ScrollPhotoSlideshow";
+import { useNavigate } from "react-router-dom";
 
 interface WeddingDetailsProps {
   isVisible: boolean;
 }
 
 export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
+  const navigate = useNavigate();
   const details = [
     {
       content: "August 8th, 2026",
@@ -159,6 +161,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
               We would be honored by your presence
             </p>
             <button
+              onClick={() => navigate("/rsvp")}
               className={cn(
                 "px-8 py-3 rounded-full",
                 "font-elegant text-sm tracking-widest uppercase",
