@@ -1,26 +1,24 @@
-import React, { useState, useRef } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Envelope from '../components/Envelope';
 import { WeddingDetails } from '../components/WeddingDetails';
 
 const headerVideo = '/Header_chrome.mp4';
 
+interface IndexProps {
+  onMusicStart?: () => void;
+}
+
 /**
  * Main Index Page
  * 3-stage flow: Envelope → Video → Wedding Details
  */
-const Index = () => {
+const Index = ({ onMusicStart }: IndexProps) => {
   const [stage, setStage] = useState<'envelope' | 'video' | 'details'>('envelope');
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleEnvelopeOpen = () => {
     setStage('video');
-    
-    // Start background music
-    if (audioRef.current) {
-      audioRef.current.muted = false;
-      audioRef.current.play().catch(console.error);
-    }
+    onMusicStart?.();
   };
 
   const handleContinue = () => {
@@ -29,10 +27,6 @@ const Index = () => {
 
   return (
     <main className="relative min-h-screen w-full bg-[#fdf8f4]">
-      <audio ref={audioRef} loop muted>
-        <source src="/open.mp3" type="audio/mpeg" />
-      </audio>
-
       <AnimatePresence mode="wait">
         {/* Stage 1: Envelope */}
         {stage === 'envelope' && (
@@ -113,29 +107,6 @@ const Index = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Music Control Button */}
-      {stage !== 'envelope' && (
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
-          whileHover={{ opacity: 1 }}
-          onClick={() => {
-            if (audioRef.current) {
-              audioRef.current.paused ? audioRef.current.play() : audioRef.current.pause();
-            }
-          }}
-          className="fixed bottom-6 right-6 z-[110] p-3 rounded-full bg-white/90 backdrop-blur-md border border-stone-200 text-stone-600 shadow-lg"
-        >
-          <div className="flex items-center gap-2 px-1">
-            <div className="flex gap-1 items-end h-3">
-              <motion.div animate={{ height: ["20%", "100%", "40%"] }} transition={{ repeat: Infinity, duration: 0.6 }} className="w-1 bg-rose-300" />
-              <motion.div animate={{ height: ["40%", "20%", "80%"] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1 bg-rose-400" />
-              <motion.div animate={{ height: ["60%", "100%", "20%"] }} transition={{ repeat: Infinity, duration: 0.5 }} className="w-1 bg-rose-300" />
-            </div>
-          </div>
-        </motion.button>
-      )}
     </main>
   );
 };
