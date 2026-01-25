@@ -12,10 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsbxDiLqAR5Wy8IhLFhC4Ox9D_4V6VNfAym4SMF_pbc7HlmJNYFCre-4NVVaBERhY-wA/exec";
 
 const RSVP = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,15 +32,88 @@ const RSVP = () => {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Will connect to Google Sheets in the next step
-    console.log("Form submitted:", formData);
+    
+    // Basic validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.attending) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      // With no-cors, we can't read the response, but if no error was thrown, assume success
+      setIsSubmitted(true);
+      toast({
+        title: "RSVP Submitted!",
+        description: "Thank you for your response. We can't wait to celebrate with you!",
+      });
+    } catch (error) {
+      console.error("Error submitting RSVP:", error);
+      toast({
+        title: "Submission Error",
+        description: "There was a problem submitting your RSVP. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  // Show success state after submission
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-background py-12 px-4 flex items-center justify-center">
+        <div className="max-w-xl mx-auto text-center animate-fade-in-up">
+          <p className="font-elegant text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
+            Thank You
+          </p>
+          <h1 className="font-script text-5xl md:text-6xl text-stone-600 mb-6">
+            RSVP Received
+          </h1>
+          <p className="font-elegant text-muted-foreground mb-8">
+            We're so excited to celebrate with you on August 8th, 2026!
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className={cn(
+              "px-8 py-3 rounded-full",
+              "font-elegant text-sm tracking-widest uppercase",
+              "bg-primary text-primary-foreground",
+              "border border-gold/30",
+              "shadow-lg hover:shadow-xl",
+              "transition-all duration-300",
+              "hover:scale-105 hover:bg-primary/90"
+            )}
+          >
+            Back to Invitation
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background py-12 px-4">
@@ -214,6 +293,7 @@ const RSVP = () => {
           >
             <Button
               type="submit"
+              disabled={isSubmitting}
               className={cn(
                 "w-full px-8 py-3 rounded-full",
                 "font-elegant text-sm tracking-widest uppercase",
@@ -221,10 +301,18 @@ const RSVP = () => {
                 "border border-gold/30",
                 "shadow-lg hover:shadow-xl",
                 "transition-all duration-300",
-                "hover:scale-[1.02] hover:bg-primary/90"
+                "hover:scale-[1.02] hover:bg-primary/90",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
             >
-              Submit RSVP
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit RSVP"
+              )}
             </Button>
           </div>
         </form>
