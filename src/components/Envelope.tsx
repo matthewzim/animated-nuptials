@@ -1,13 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-/**
- * Realistic Envelope Component (Build-Safe Version)
- * Fixes potential build errors:
- * 1. Replaced dangerouslySetInnerHTML style tag with inline React style objects.
- * 2. Standardized SVG filter attributes for strict React/TS compliance.
- * 3. Simplified 3D transform utilities.
- */
 
 interface EnvelopeProps {
   onOpen?: () => void;
@@ -17,220 +9,95 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpen = () => {
+    if (isOpen) return;
     setIsOpen(true);
-    onOpen?.();
+
+    window.setTimeout(() => {
+      onOpen?.();
+    }, 1850);
   };
 
-  // Common styles to replace custom classes
-  const preserve3d: React.CSSProperties = { transformStyle: 'preserve-3d' };
-  const backfaceHidden: React.CSSProperties = { backfaceVisibility: 'hidden' };
-
   return (
-    <div className="w-full h-full flex items-center justify-center p-4 md:p-8 overflow-hidden font-serif">
-      {/* SVG Filter for Paper Texture */}
-      <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }}>
-        <filter id="paper-grain">
-          <feTurbulence 
-            type="fractalNoise" 
-            baseFrequency="0.6" 
-            numOctaves="3" 
-            stitchTiles="stitch" 
-          />
-          <feColorMatrix type="saturate" values="0" />
-          <feComponentTransfer>
-            <feFuncR type="linear" slope="0.1" />
-            <feFuncG type="linear" slope="0.1" />
-            <feFuncB type="linear" slope="0.1" />
-            <feFuncA type="linear" slope="0.05" />
-          </feComponentTransfer>
-          <feBlend in="SourceGraphic" mode="multiply" />
-        </filter>
-      </svg>
-      
-      {/* Scene Container */}
-      <div className="relative w-full max-w-lg md:max-w-2xl lg:max-w-4xl aspect-[4/3]">
-        
-        {/* Floor Shadow */}
-        <div className="absolute bottom-10 w-[80%] h-12 bg-black/5 blur-3xl rounded-[100%] transform -translate-y-10" />
+    <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-[#edf5ff] px-4">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.85),transparent_50%),radial-gradient(circle_at_80%_70%,rgba(214,231,255,0.7),transparent_45%)]" />
 
-        {/* 3D Envelope Wrapper */}
-        <div className="relative w-full h-full" style={{ perspective: '2000px' }}>
+      <div className="relative w-full max-w-xl md:max-w-2xl aspect-[4/3]">
+        <div className="absolute bottom-10 left-1/2 h-12 w-[82%] -translate-x-1/2 rounded-full bg-[#9abbe2]/30 blur-2xl" />
+
+        <motion.div
+          initial={false}
+          animate={{ y: isOpen ? 55 : 0, scale: isOpen ? 0.98 : 1 }}
+          transition={{ duration: 0.65, ease: 'easeInOut' }}
+          className="relative h-full w-full"
+        >
+          <div className="absolute inset-0 rounded-md border border-[#bdd5ef] bg-[#e9f3ff] shadow-[0_25px_45px_rgba(120,156,199,0.25)]" />
+
+          <div className="absolute inset-y-0 left-0 z-10 w-1/2 rounded-l-md bg-[#deecfb] [clip-path:polygon(0%_0%,0%_100%,100%_50%)]" />
+          <div className="absolute inset-y-0 right-0 z-10 w-1/2 rounded-r-md bg-[#d6e7fa] [clip-path:polygon(100%_0%,100%_100%,0%_50%)]" />
+          <div className="absolute bottom-0 left-0 right-0 z-20 h-[57%] bg-[#cfe1f7] [clip-path:polygon(0%_100%,100%_100%,50%_0%)]" />
+
           <motion.div
-            initial={false}
-            animate={{ rotateX: isOpen ? 10 : 0, y: isOpen ? 100 : 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="relative w-full h-full"
-            style={preserve3d}
+            animate={{ rotateX: isOpen ? -178 : 0 }}
+            transition={{ duration: 0.72, ease: 'easeInOut' }}
+            className="absolute left-0 right-0 top-0 z-30 h-[57%] origin-top [transform-style:preserve-3d]"
+            style={{ clipPath: 'polygon(0% 0%,100% 0%,50% 100%)' }}
           >
-            {/* ENVELOPE BACK */}
-            <div 
-              className="absolute inset-0 border border-stone-200/50 rounded-sm shadow-xl overflow-hidden"
-              style={{ 
-                backgroundImage: 'url(/envelopebackground.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
+            <div className="absolute inset-0 bg-[#c8dcf5]" />
+            <div
+              className="absolute inset-0 [backface-visibility:hidden]"
+              style={{ transform: 'rotateX(180deg)' }}
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/5 via-transparent to-transparent opacity-30" />
+              <div className="absolute inset-0 bg-[#e4f0ff]" />
             </div>
-
-            {/* INVITATION CARD */}
-            <AnimatePresence>
-              {isOpen && (
-                <motion.div
-                  initial={{ y: 0, translateZ: -1 }}
-                  animate={{ y: -250, translateZ: 50, rotateX: -5 }}
-                  exit={{ y: 0, translateZ: -1 }}
-                  transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
-                  className="absolute left-[5%] top-[5%] w-[90%] h-[90%] bg-white shadow-2xl rounded-sm p-8 md:p-12 border border-stone-100 flex flex-col items-center justify-center text-center overflow-hidden"
-                  style={{ filter: 'url(#paper-grain)' }}
-                >
-                  <div className="border-4 border-double border-stone-200 p-6 md:p-10 w-full h-full flex flex-col items-center justify-center">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.2 }}
-                    >
-                      <h2 className="text-stone-400 uppercase tracking-[0.3em] text-sm mb-4">You are cordially invited</h2>
-                      <h1 className="text-4xl md:text-6xl text-stone-800 mb-6 italic leading-tight">Your Story Unfolds</h1>
-                      <div className="w-16 h-px bg-stone-300 mx-auto mb-6" />
-                      <p className="text-stone-600 max-w-md mx-auto text-lg leading-relaxed">
-                        Join us as we celebrate the beginning of a new chapter in our lives together.
-                      </p>
-                      <div className="mt-8 text-stone-500 font-sans tracking-widest text-xs uppercase">
-                        Summer 2026 • Estate Gardens
-                      </div>
-                    </motion.div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* ENVELOPE FRONT - BOTTOM FLAP */}
-            <div 
-              className="absolute bottom-0 left-0 right-0 h-3/5 origin-bottom z-20"
-              style={{ 
-                clipPath: 'polygon(0% 100%, 100% 100%, 50% 0%)',
-                backgroundImage: 'url(/envelopebackground.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              {/* Inner edge shadows for depth */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/8 to-transparent" />
-              <div 
-                className="absolute inset-0" 
-                style={{
-                  background: 'linear-gradient(to bottom right, rgba(0,0,0,0.15) 0%, transparent 30%), linear-gradient(to bottom left, rgba(0,0,0,0.15) 0%, transparent 30%)'
-                }}
-              />
-            </div>
-
-            {/* ENVELOPE FRONT - SIDE FLAPS */}
-            <div 
-              className="absolute inset-y-0 left-0 w-3/5 z-10"
-              style={{ 
-                clipPath: 'polygon(0% 0%, 0% 100%, 100% 50%)',
-                backgroundImage: 'url(/envelopebackground.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              {/* Inner edge shadow along diagonal */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/8 to-transparent" />
-              <div 
-                className="absolute inset-0" 
-                style={{
-                  background: 'linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.12) 80%, rgba(0,0,0,0.18) 100%)'
-                }}
-              />
-            </div>
-            <div 
-              className="absolute inset-y-0 right-0 w-3/5 z-10"
-              style={{ 
-                clipPath: 'polygon(100% 0%, 100% 100%, 0% 50%)',
-                backgroundImage: 'url(/envelopebackground.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              {/* Subtle base shadow */}
-              <div className="absolute inset-0 bg-gradient-to-l from-black/5 to-transparent" />
-              {/* Upper right edge shadow only */}
-              <div 
-                className="absolute inset-0" 
-                style={{
-                  background: 'linear-gradient(225deg, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.12) 15%, transparent 35%)'
-                }}
-              />
-            </div>
-
-            {/* ENVELOPE FRONT - TOP FLAP */}
-            <motion.div
-              animate={{ rotateX: isOpen ? -170 : 0 }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-              className="absolute top-0 left-0 right-0 h-3/5 origin-top z-30"
-              style={{ 
-                ...preserve3d,
-                clipPath: 'polygon(0% 0%, 100% 0%, 50% 100%)',
-                backgroundImage: 'url(/envelopebackground.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              {/* Flap Underside (Visible when open) */}
-              <div 
-                className="absolute inset-0" 
-                style={{ 
-                  ...backfaceHidden, 
-                  transform: 'rotateX(180deg)',
-                  backgroundImage: 'url(/envelopebackground.png)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }} 
-              />
-              
-              {/* Flap Top Detail */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/5 to-transparent" />
-            </motion.div>
-
-            {/* INTERACTIVE WAX SEAL */}
-            <AnimatePresence>
-              {!isOpen && (
-                <motion.div
-                  onClick={handleOpen}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8, y: -20 }}
-                  whileHover={{ scale: 1.05 }}
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 cursor-pointer"
-                >
-                  <img 
-                    src="/waxseal.png" 
-                    alt="Wax seal" 
-                    className="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain filter drop-shadow-lg"
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
-        </div>
+
+          <AnimatePresence>
+            {isOpen && (
+              <>
+                <motion.div
+                  initial={{ y: 20, opacity: 0.95, scale: 0.92 }}
+                  animate={{ y: -190, opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.75, ease: 'easeOut', delay: 0.25 }}
+                  className="absolute left-[7%] top-[13%] z-40 h-[82%] w-[86%] rounded-[2px] border border-[#e9edf3] bg-white shadow-[0_18px_35px_rgba(90,116,146,0.2)]"
+                />
+
+                <motion.div
+                  initial={{ y: -190, opacity: 1, scale: 1 }}
+                  animate={{ y: -190, opacity: 0, scale: 3.8 }}
+                  transition={{ duration: 0.85, ease: 'easeInOut', delay: 0.95 }}
+                  className="absolute left-[7%] top-[13%] z-[60] h-[82%] w-[86%] rounded-[2px] border border-[#f0f2f6] bg-white"
+                />
+              </>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {!isOpen && (
+              <motion.button
+                type="button"
+                onClick={handleOpen}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                className="absolute left-1/2 top-[55%] z-50 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+              >
+                <img
+                  src="/waxseal.png"
+                  alt="Wax seal"
+                  className="h-16 w-16 object-contain drop-shadow-[0_8px_10px_rgba(85,59,59,0.4)] md:h-20 md:w-20"
+                />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
 
-      {/* Footer text */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="absolute bottom-8 text-center"
-      >
-        <p className="text-white uppercase tracking-widest text-base md:text-lg font-bold mb-1">
-          {isOpen ? "Refresh to reseal the envelope" : "Click the wax seal to open"}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute bottom-7 text-center">
+        <p className="text-[#406085] text-sm font-semibold uppercase tracking-[0.3em] md:text-base">
+          {isOpen ? 'Opening invitation...' : 'Click the wax seal to open'}
         </p>
-        {!isOpen && (
-          <p className="text-white uppercase tracking-widest text-sm md:text-base font-bold">
-            Turn on sound
-          </p>
-        )}
       </motion.div>
     </div>
   );
