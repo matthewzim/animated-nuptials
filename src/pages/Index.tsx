@@ -58,7 +58,7 @@ const Index = ({ onMusicStart }: IndexProps) => {
               muted
               loop
               playsInline
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover object-[50%_72%]"
             >
               <source src={headerVideo} type="video/mp4" />
             </video>
