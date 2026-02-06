@@ -35,10 +35,8 @@ const RSVP = () => {
     message: "",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (currentStep < TOTAL_STEPS - 1) {
+  const submitRsvp = async () => {
+    if (currentStep < TOTAL_STEPS - 1 || isSubmitting) {
       return;
     }
 
@@ -279,15 +277,7 @@ const RSVP = () => {
           <p className="text-muted-foreground">Please respond by May 1st, 2026</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && currentStep < TOTAL_STEPS - 1) {
-              e.preventDefault();
-            }
-          }}
-          className="space-y-6"
-        >
+        <form className="space-y-6">
           {renderCurrentQuestion()}
 
           <div className="pt-4 flex items-center gap-3">
@@ -308,7 +298,8 @@ const RSVP = () => {
               </Button>
             ) : (
               <Button
-                type="submit"
+                type="button"
+                onClick={submitRsvp}
                 disabled={isSubmitting}
                 className={cn(
                   "flex-1 px-8 py-3 rounded-full",
