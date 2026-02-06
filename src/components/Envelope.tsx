@@ -14,7 +14,7 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
 
     window.setTimeout(() => {
       onOpen?.();
-    }, 1850);
+    }, 2050);
   };
 
   return (
@@ -55,17 +55,17 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
             {isOpen && (
               <>
                 <motion.div
-                  initial={{ y: 20, opacity: 0.95, scale: 0.92 }}
-                  animate={{ y: -190, opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.75, ease: 'easeOut', delay: 0.25 }}
+                  initial={{ y: 30, opacity: 0.8, scale: 0.9 }}
+                  animate={{ y: -188, opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
                   className="absolute left-[7%] top-[13%] z-40 h-[82%] w-[86%] rounded-[2px] border border-[#e9edf3] bg-white shadow-[0_18px_35px_rgba(90,116,146,0.2)]"
                 />
 
                 <motion.div
-                  initial={{ y: -190, opacity: 1, scale: 1 }}
-                  animate={{ y: -190, opacity: 0, scale: 3.8 }}
-                  transition={{ duration: 0.85, ease: 'easeInOut', delay: 0.95 }}
-                  className="absolute left-[7%] top-[13%] z-[60] h-[82%] w-[86%] rounded-[2px] border border-[#f0f2f6] bg-white"
+                  initial={{ y: -188, opacity: 0.9, scale: 1, filter: 'blur(0px)' }}
+                  animate={{ y: -196, opacity: 0, scale: 4.4, filter: 'blur(3px)' }}
+                  transition={{ duration: 1.05, ease: [0.19, 1, 0.22, 1], delay: 0.8 }}
+                  className="absolute left-[7%] top-[13%] z-[60] h-[82%] w-[86%] rounded-[2px] border border-[#f0f2f6] bg-white will-change-transform"
                 />
               </>
             )}
@@ -98,6 +98,11 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
         <p className="text-[#406085] text-sm font-semibold uppercase tracking-[0.3em] md:text-base">
           {isOpen ? 'Opening invitation...' : 'Click the wax seal to open'}
         </p>
+        {!isOpen && (
+          <p className="mt-2 text-xs font-medium tracking-[0.2em] text-[#406085]/80 md:text-sm">
+            Turn on Sound
+          </p>
+        )}
       </motion.div>
     </div>
   );
