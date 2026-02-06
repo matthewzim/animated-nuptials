@@ -38,6 +38,10 @@ const RSVP = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (currentStep < TOTAL_STEPS - 1) {
+      return;
+    }
+
     if (!formData.name.trim() || !formData.email.trim() || !formData.attending) {
       toast({
         title: "Missing Information",
@@ -271,11 +275,19 @@ const RSVP = () => {
           <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4 font-semibold">
             We Would Be Honored
           </p>
-          <h1 className="text-5xl md:text-6xl text-stone-600 mb-4 font-semibold">RSVP</h1>
+          <h1 className="font-serif text-5xl md:text-6xl text-stone-600 mb-4 font-semibold">RSVP</h1>
           <p className="text-muted-foreground">Please respond by May 1st, 2026</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && currentStep < TOTAL_STEPS - 1) {
+              e.preventDefault();
+            }
+          }}
+          className="space-y-6"
+        >
           {renderCurrentQuestion()}
 
           <div className="pt-4 flex items-center gap-3">

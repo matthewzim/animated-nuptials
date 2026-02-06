@@ -223,11 +223,11 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
         animate={{ opacity: 1 }}
         className="absolute bottom-8 text-center"
       >
-        <p className="text-stone-600 uppercase tracking-widest text-base md:text-lg font-bold mb-1">
+        <p className="text-white uppercase tracking-widest text-base md:text-lg font-bold mb-1">
           {isOpen ? "Refresh to reseal the envelope" : "Click the wax seal to open"}
         </p>
         {!isOpen && (
-          <p className="text-stone-500 uppercase tracking-widest text-sm md:text-base font-bold">
+          <p className="text-white uppercase tracking-widest text-sm md:text-base font-bold">
             Turn on sound
           </p>
         )}

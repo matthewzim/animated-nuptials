@@ -74,7 +74,7 @@ const Index = ({ onMusicStart }: IndexProps) => {
                 <p className="text-white text-2xl md:text-3xl font-bold tracking-[0.3em] uppercase drop-shadow-xl">
                   08.08.2026
                 </p>
-                <h2 className="text-white text-4xl md:text-6xl font-bold tracking-[0.3em] uppercase drop-shadow-xl">
+                <h2 className="font-serif text-white text-4xl md:text-6xl font-bold tracking-[0.3em] uppercase drop-shadow-xl">
                   You're Cordially Invited
                 </h2>
                 <motion.p
