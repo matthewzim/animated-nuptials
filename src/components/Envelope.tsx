@@ -203,7 +203,7 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8, y: -20 }}
                   whileHover={{ scale: 1.05 }}
-                  className="absolute left-[45%] top-[50%] -translate-x-1/2 -translate-y-1/2 z-50 cursor-pointer"
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 cursor-pointer"
                 >
                   <img 
                     src="/waxseal.png" 
@@ -223,11 +223,11 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
         animate={{ opacity: 1 }}
         className="absolute bottom-8 text-center"
       >
-        <p className="text-stone-600 uppercase tracking-widest text-xs mb-1">
+        <p className="text-stone-600 uppercase tracking-widest text-base md:text-lg font-bold mb-1">
           {isOpen ? "Refresh to reseal the envelope" : "Click the wax seal to open"}
         </p>
         {!isOpen && (
-          <p className="text-stone-500 uppercase tracking-widest text-[10px]">
+          <p className="text-stone-500 uppercase tracking-widest text-sm md:text-base font-bold">
             Turn on sound
           </p>
         )}

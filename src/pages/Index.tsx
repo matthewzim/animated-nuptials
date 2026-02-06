@@ -71,17 +71,17 @@ const Index = ({ onMusicStart }: IndexProps) => {
               className="absolute inset-0 flex items-center justify-center z-10"
             >
               <div className="text-center space-y-4">
-                <p className="text-white text-lg md:text-xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
+                <p className="text-white text-2xl md:text-3xl font-bold tracking-[0.3em] uppercase drop-shadow-xl">
                   08.08.2026
                 </p>
-                <h2 className="text-white text-3xl md:text-5xl font-extralight tracking-[0.3em] uppercase drop-shadow-xl">
+                <h2 className="text-white text-4xl md:text-6xl font-bold tracking-[0.3em] uppercase drop-shadow-xl">
                   You're Cordially Invited
                 </h2>
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  className="text-white/90 text-sm md:text-base font-light tracking-[0.2em] uppercase mt-8 drop-shadow-lg"
+                  className="text-white/90 text-lg md:text-xl font-bold tracking-[0.2em] uppercase mt-8 drop-shadow-lg"
                 >
                   Click to Continue
                 </motion.p>
