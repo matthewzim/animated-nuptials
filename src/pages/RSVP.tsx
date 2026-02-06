@@ -15,27 +15,29 @@ import {
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsbxDiLqAR5Wy8IhLFhC4Ox9D_4V6VNfAym4SMF_pbc7HlmJNYFCre-4NVVaBERhY-wA/exec";
+const GOOGLE_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbwsbxDiLqAR5Wy8IhLFhC4Ox9D_4V6VNfAym4SMF_pbc7HlmJNYFCre-4NVVaBERhY-wA/exec";
+
+const TOTAL_STEPS = 6;
 
 const RSVP = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     attending: "",
-    guests: "",
-    meal: "",
     dietary: "",
+    songRequest: "",
     message: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
+
     if (!formData.name.trim() || !formData.email.trim() || !formData.attending) {
       toast({
         title: "Missing Information",
@@ -48,7 +50,7 @@ const RSVP = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: {
@@ -60,7 +62,6 @@ const RSVP = () => {
         }),
       });
 
-      // With no-cors, we can't read the response, but if no error was thrown, assume success
       setIsSubmitted(true);
       toast({
         title: "RSVP Submitted!",
@@ -82,25 +83,165 @@ const RSVP = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Show success state after submission
+  const goToNextStep = () => {
+    if (currentStep === 0 && !formData.name.trim()) {
+      toast({
+        title: "Full Name Required",
+        description: "Please enter your full name before continuing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (currentStep === 1 && !formData.email.trim()) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address before continuing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (currentStep === 2 && !formData.attending) {
+      toast({
+        title: "RSVP Response Required",
+        description: "Please select whether you can attend.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS - 1));
+  };
+
+  const goToPreviousStep = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  const renderCurrentQuestion = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <div className="animate-fade-in-up">
+            <Label htmlFor="name" className="text-foreground font-medium">
+              Full Name *
+            </Label>
+            <Input
+              id="name"
+              type="text"
+              required
+              placeholder="Enter your full name"
+              value={formData.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+              className="mt-2 bg-card/50 border-border/50 focus:border-primary"
+            />
+          </div>
+        );
+      case 1:
+        return (
+          <div className="animate-fade-in-up">
+            <Label htmlFor="email" className="text-foreground font-medium">
+              Email Address *
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              required
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+              className="mt-2 bg-card/50 border-border/50 focus:border-primary"
+            />
+          </div>
+        );
+      case 2:
+        return (
+          <div className="animate-fade-in-up">
+            <Label htmlFor="attending" className="text-foreground font-medium">
+              Will you be attending? *
+            </Label>
+            <Select
+              value={formData.attending}
+              onValueChange={(value) => handleChange("attending", value)}
+            >
+              <SelectTrigger className="mt-2 bg-card/50 border-border/50">
+                <SelectValue placeholder="Select your response" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="yes">Joyfully Accept</SelectItem>
+                <SelectItem value="no">Regretfully Decline</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="animate-fade-in-up">
+            <Label htmlFor="dietary" className="text-foreground font-medium">
+              Dietary Restrictions or Allergies
+            </Label>
+            <Input
+              id="dietary"
+              type="text"
+              placeholder="e.g., gluten-free, nut allergy"
+              value={formData.dietary}
+              onChange={(e) => handleChange("dietary", e.target.value)}
+              className="mt-2 bg-card/50 border-border/50 focus:border-primary"
+            />
+          </div>
+        );
+      case 4:
+        return (
+          <div className="animate-fade-in-up">
+            <Label htmlFor="songRequest" className="text-foreground font-medium">
+              Song Request
+            </Label>
+            <Input
+              id="songRequest"
+              type="text"
+              placeholder="Share a song that will get you on the dance floor"
+              value={formData.songRequest}
+              onChange={(e) => handleChange("songRequest", e.target.value)}
+              className="mt-2 bg-card/50 border-border/50 focus:border-primary"
+            />
+          </div>
+        );
+      default:
+        return (
+          <div className="animate-fade-in-up">
+            <Label htmlFor="message" className="text-foreground font-medium">
+              Message for the Couple
+            </Label>
+            <Textarea
+              id="message"
+              placeholder="Share your well wishes..."
+              value={formData.message}
+              onChange={(e) => handleChange("message", e.target.value)}
+              className="mt-2 bg-card/50 border-border/50 focus:border-primary min-h-[120px]"
+            />
+          </div>
+        );
+    }
+  };
+
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-background py-12 px-4 flex items-center justify-center">
         <div className="max-w-xl mx-auto text-center animate-fade-in-up">
-          <p className="font-elegant text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
+          <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4 font-semibold">
             Thank You
           </p>
-          <h1 className="font-script text-5xl md:text-6xl text-stone-600 mb-6">
+          <h1 className="text-5xl md:text-6xl text-stone-600 mb-6 font-semibold">
             RSVP Received
           </h1>
-          <p className="font-elegant text-muted-foreground mb-8">
+          <p className="text-muted-foreground mb-8">
             We're so excited to celebrate with you on August 8th, 2026!
           </p>
           <button
             onClick={() => navigate("/")}
             className={cn(
               "px-8 py-3 rounded-full",
-              "font-elegant text-sm tracking-widest uppercase",
+              "text-sm tracking-widest uppercase font-semibold",
               "bg-primary text-primary-foreground",
               "border border-gold/30",
               "shadow-lg hover:shadow-xl",
@@ -118,214 +259,69 @@ const RSVP = () => {
   return (
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-xl mx-auto">
-        {/* Back Button */}
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="font-elegant text-sm">Back to Invitation</span>
+          <span className="text-sm">Back to Invitation</span>
         </button>
 
-        {/* Header */}
         <div className="text-center mb-12 animate-fade-in-up">
-          <p className="font-elegant text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
+          <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4 font-semibold">
             We Would Be Honored
           </p>
-          <h1 className="font-script text-5xl md:text-6xl text-stone-600 mb-4">
-            RSVP
-          </h1>
-          <p className="font-elegant text-muted-foreground">
-            Please respond by May 1st, 2026
-          </p>
+          <h1 className="text-5xl md:text-6xl text-stone-600 mb-4 font-semibold">RSVP</h1>
+          <p className="text-muted-foreground">Please respond by May 1st, 2026</p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name */}
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: "0.1s", animationFillMode: "both" }}
-          >
-            <Label htmlFor="name" className="font-elegant text-foreground">
-              Full Name *
-            </Label>
-            <Input
-              id="name"
-              type="text"
-              required
-              placeholder="Enter your full name"
-              value={formData.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              className="mt-2 bg-card/50 border-border/50 focus:border-primary"
-            />
-          </div>
+          {renderCurrentQuestion()}
 
-          {/* Email */}
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: "0.2s", animationFillMode: "both" }}
-          >
-            <Label htmlFor="email" className="font-elegant text-foreground">
-              Email Address *
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-              className="mt-2 bg-card/50 border-border/50 focus:border-primary"
-            />
-          </div>
+          <div className="pt-4 flex items-center gap-3">
+            {currentStep > 0 && (
+              <Button
+                type="button"
+                onClick={goToPreviousStep}
+                variant="outline"
+                className="w-1/3"
+              >
+                Back
+              </Button>
+            )}
 
-          {/* Attending */}
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: "0.3s", animationFillMode: "both" }}
-          >
-            <Label htmlFor="attending" className="font-elegant text-foreground">
-              Will you be attending? *
-            </Label>
-            <Select
-              value={formData.attending}
-              onValueChange={(value) => handleChange("attending", value)}
-            >
-              <SelectTrigger className="mt-2 bg-card/50 border-border/50">
-                <SelectValue placeholder="Select your response" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="yes">Joyfully Accept</SelectItem>
-                <SelectItem value="no">Regretfully Decline</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Number of Guests */}
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: "0.4s", animationFillMode: "both" }}
-          >
-            <Label htmlFor="guests" className="font-elegant text-foreground">
-              Number of Guests
-            </Label>
-            <Select
-              value={formData.guests}
-              onValueChange={(value) => handleChange("guests", value)}
-            >
-              <SelectTrigger className="mt-2 bg-card/50 border-border/50">
-                <SelectValue placeholder="Select number of guests" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1 Guest</SelectItem>
-                <SelectItem value="2">2 Guests</SelectItem>
-                <SelectItem value="3">3 Guests</SelectItem>
-                <SelectItem value="4">4 Guests</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Meal Preference */}
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: "0.5s", animationFillMode: "both" }}
-          >
-            <Label htmlFor="meal" className="font-elegant text-foreground">
-              Meal Preference
-            </Label>
-            <Select
-              value={formData.meal}
-              onValueChange={(value) => handleChange("meal", value)}
-            >
-              <SelectTrigger className="mt-2 bg-card/50 border-border/50">
-                <SelectValue placeholder="Select meal preference" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="beef">Beef</SelectItem>
-                <SelectItem value="chicken">Chicken</SelectItem>
-                <SelectItem value="fish">Fish</SelectItem>
-                <SelectItem value="vegetarian">Vegetarian</SelectItem>
-                <SelectItem value="vegan">Vegan</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Dietary Restrictions */}
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: "0.6s", animationFillMode: "both" }}
-          >
-            <Label htmlFor="dietary" className="font-elegant text-foreground">
-              Dietary Restrictions or Allergies
-            </Label>
-            <Input
-              id="dietary"
-              type="text"
-              placeholder="e.g., gluten-free, nut allergy"
-              value={formData.dietary}
-              onChange={(e) => handleChange("dietary", e.target.value)}
-              className="mt-2 bg-card/50 border-border/50 focus:border-primary"
-            />
-          </div>
-
-          {/* Message */}
-          <div
-            className="animate-fade-in-up"
-            style={{ animationDelay: "0.7s", animationFillMode: "both" }}
-          >
-            <Label htmlFor="message" className="font-elegant text-foreground">
-              Message for the Couple
-            </Label>
-            <Textarea
-              id="message"
-              placeholder="Share your well wishes..."
-              value={formData.message}
-              onChange={(e) => handleChange("message", e.target.value)}
-              className="mt-2 bg-card/50 border-border/50 focus:border-primary min-h-[120px]"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <div
-            className="pt-6 animate-fade-in-up"
-            style={{ animationDelay: "0.8s", animationFillMode: "both" }}
-          >
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className={cn(
-                "w-full px-8 py-3 rounded-full",
-                "font-elegant text-sm tracking-widest uppercase",
-                "bg-primary text-primary-foreground",
-                "border border-gold/30",
-                "shadow-lg hover:shadow-xl",
-                "transition-all duration-300",
-                "hover:scale-[1.02] hover:bg-primary/90",
-                "disabled:opacity-50 disabled:cursor-not-allowed"
-              )}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                "Submit RSVP"
-              )}
-            </Button>
+            {currentStep < TOTAL_STEPS - 1 ? (
+              <Button type="button" onClick={goToNextStep} className="flex-1">
+                Next
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className={cn(
+                  "flex-1 px-8 py-3 rounded-full",
+                  "text-sm tracking-widest uppercase font-semibold",
+                  "bg-primary text-primary-foreground",
+                  "border border-gold/30",
+                  "shadow-lg hover:shadow-xl",
+                  "transition-all duration-300",
+                  "hover:scale-[1.02] hover:bg-primary/90",
+                  "disabled:opacity-50 disabled:cursor-not-allowed"
+                )}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit RSVP"
+                )}
+              </Button>
+            )}
           </div>
         </form>
 
-        {/* Footer */}
-        <div
-          className="mt-12 text-center animate-fade-in-up"
-          style={{ animationDelay: "0.9s", animationFillMode: "both" }}
-        >
-          <p className="font-script text-2xl text-dusty-rose">
-            We can't wait to celebrate with you.
-          </p>
-        </div>
       </div>
     </div>
   );
