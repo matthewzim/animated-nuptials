@@ -14,7 +14,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
       delay: "0.2s",
     },
     {
-      content: "2:30 PM Arrival",
+      content: "2:30 PM Arrival // 3:00 Ceremony",
       delay: "0.4s",
     },
     {
