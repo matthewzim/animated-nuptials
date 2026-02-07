@@ -8,6 +8,18 @@ interface EnvelopeProps {
 export default function Envelope({ onOpen }: EnvelopeProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const LetterFace = () => (
+    <>
+      <div className="pointer-events-none absolute inset-3 border border-[#d7dee8]" />
+      <div className="pointer-events-none absolute inset-5 border border-[#e2e7ee]" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <p className="font-script text-[4.4rem] leading-none text-[#5c6f8b] md:text-[5.4rem]">
+          M&amp;M
+        </p>
+      </div>
+    </>
+  );
+
   const handleOpen = () => {
     if (isOpen) return;
     setIsOpen(true);
@@ -59,14 +71,18 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                   animate={{ y: -188, opacity: 1, scale: 1 }}
                   transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
                   className="absolute left-[7%] top-[13%] z-40 h-[82%] w-[86%] rounded-[2px] border border-[#e9edf3] bg-white shadow-[0_18px_35px_rgba(90,116,146,0.2)]"
-                />
+                >
+                  <LetterFace />
+                </motion.div>
 
                 <motion.div
                   initial={{ y: -188, opacity: 0.9, scale: 1, filter: 'blur(0px)' }}
                   animate={{ y: -196, opacity: 0, scale: 4.4, filter: 'blur(3px)' }}
                   transition={{ duration: 1.05, ease: [0.19, 1, 0.22, 1], delay: 0.8 }}
                   className="absolute left-[7%] top-[13%] z-[60] h-[82%] w-[86%] rounded-[2px] border border-[#f0f2f6] bg-white will-change-transform"
-                />
+                >
+                  <LetterFace />
+                </motion.div>
               </>
             )}
           </AnimatePresence>
