@@ -75,12 +75,23 @@ export const ScrollPhotoSlideshow = () => {
       {/* Photo indicator dots */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
         {photos.map((_, index) => (
-          <div
+          <button
             key={index}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex 
-                ? 'bg-white scale-125' 
-                : 'bg-white/50'
+            type="button"
+            aria-label={`Go to photo ${index + 1}`}
+            onClick={() => {
+              setCurrentIndex(index);
+              const detailsContent = document.querySelector('[data-details-content]');
+              if (detailsContent) {
+                const scrollHeight = detailsContent.scrollHeight - detailsContent.clientHeight;
+                const targetScroll = (index / photos.length) * scrollHeight;
+                detailsContent.scrollTo({ top: targetScroll, behavior: 'smooth' });
+              }
+            }}
+            className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+              index === currentIndex
+                ? 'bg-white scale-125'
+                : 'bg-white/50 hover:bg-white/75'
             }`}
           />
         ))}
