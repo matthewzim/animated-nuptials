@@ -14,7 +14,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
       delay: "0.2s",
     },
     {
-      content: "2:30 PM Arrival // 3:00 Ceremony",
+      content: "2:00 PM Arrival // 2:30 PM Ceremony",
       delay: "0.4s",
     },
     {
@@ -93,8 +93,8 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             </h4>
             <div className="space-y-4">
               {[
-                { time: "2:30 PM", event: "Arrival" },
-                { time: "3:00 PM", event: "Ceremony" },
+                { time: "2:00 PM", event: "Arrival" },
+                { time: "2:30 PM", event: "Ceremony" },
                 { time: "4:00 PM", event: "Cocktail Hour" },
                 { time: "5:30 PM", event: "Reception" },
               ].map((item, index) => (
@@ -136,6 +136,9 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                   question: "Will your wedding be indoors or outdoors?",
                   answer: "Our wedding ceremony will be held outdoors, rain or shine. Please come prepared for the weather. If it should rain, umbrellas will be provided to guests. Our reception will be a combination of both indoor and outdoor areas."
                 },
+                {  
+                  question: "Is there a wedding registry?",
+                  answer: "We'll post our registry here in the coming months."
               ].map((faq, index) => (
                 <div 
                   key={index} 
