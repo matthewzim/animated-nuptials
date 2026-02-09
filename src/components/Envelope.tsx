@@ -86,12 +86,12 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
                 exit={{ opacity: 0, scale: 0.8, y: -10 }}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
-                className="absolute left-1/2 top-[55%] z-50 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                className="absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
               >
                 <img
                   src="/waxseal.png"
                   alt="Wax seal"
-                  className="h-16 w-16 object-contain drop-shadow-[0_8px_10px_rgba(85,59,59,0.4)] md:h-20 md:w-20"
+                  className="h-24 w-24 object-contain drop-shadow-[0_8px_10px_rgba(85,59,59,0.4)] md:h-32 md:w-32"
                 />
               </motion.button>
             )}
