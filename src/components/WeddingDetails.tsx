@@ -136,9 +136,10 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                   question: "Will your wedding be indoors or outdoors?",
                   answer: "Our wedding ceremony will be held outdoors, rain or shine. Please come prepared for the weather. If it should rain, umbrellas will be provided to guests. Our reception will be a combination of both indoor and outdoor areas."
                 },
-                {  
+                {
                   question: "Is there a wedding registry?",
                   answer: "We'll post our registry here in the coming months."
+                }
               ].map((faq, index) => (
                 <div 
                   key={index} 
