@@ -119,7 +119,7 @@ export default function Journey() {
       0.1,
       600
     );
-    camera.position.set(0, 0, 70);
+    camera.position.set(0, 0, 115);
 
     // ─── Lighting ────────────────────────────────────────────────────────────
     scene.add(new THREE.AmbientLight(0xffffff, 1.0));
@@ -219,24 +219,29 @@ export default function Journey() {
     // ─── Interaction state ────────────────────────────────────────────────────
     let isDragging = false;
     let lastMouse = { x: 0, y: 0 };
-    // Velocity for inertia (world-space units per frame)
-    let velX = 0;
-    let velY = 0;
-    // Target and current camera XY (panning)
-    const target = { x: 0, y: 0, z: 70 };
-    const current = { x: 0, y: 0, z: 70 };
-    const PAN_SPEED = 0.055;
+    // Velocity for inertia (radians per frame)
+    let velAzimuth = 0;
+    let velElevation = 0;
+    // Spherical camera coordinates: azimuth (horizontal), elevation (vertical), radius (zoom)
+    const INITIAL_RADIUS = 115;
+    const target = { azimuth: 0, elevation: 0, radius: INITIAL_RADIUS };
+    const current = { azimuth: 0, elevation: 0, radius: INITIAL_RADIUS };
+    const ROTATE_SPEED = 0.004;
     const ZOOM_SPEED = 0.05;
     const EASING = 0.08;
     const INERTIA = 0.91;
-    const ZOOM_MIN = 3;
-    const ZOOM_MAX = 160;
+    const ZOOM_MIN = 30;
+    const ZOOM_MAX = 200;
+    const ELEV_LIMIT = Math.PI / 2 - 0.08;
+
+    const clampElevation = (v: number) =>
+      Math.max(-ELEV_LIMIT, Math.min(ELEV_LIMIT, v));
 
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true;
       lastMouse = { x: e.clientX, y: e.clientY };
-      velX = 0;
-      velY = 0;
+      velAzimuth = 0;
+      velElevation = 0;
       renderer.domElement.style.cursor = "grabbing";
     };
 
@@ -244,10 +249,10 @@ export default function Journey() {
       if (!isDragging) return;
       const dx = e.clientX - lastMouse.x;
       const dy = e.clientY - lastMouse.y;
-      velX = -dx * PAN_SPEED;
-      velY = dy * PAN_SPEED;
-      target.x += velX;
-      target.y += velY;
+      velAzimuth = -dx * ROTATE_SPEED;
+      velElevation = -dy * ROTATE_SPEED;
+      target.azimuth += velAzimuth;
+      target.elevation = clampElevation(target.elevation + velElevation);
       lastMouse = { x: e.clientX, y: e.clientY };
     };
 
@@ -258,8 +263,8 @@ export default function Journey() {
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      target.z += e.deltaY * ZOOM_SPEED;
-      target.z = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, target.z));
+      target.radius += e.deltaY * ZOOM_SPEED;
+      target.radius = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, target.radius));
     };
 
     // Touch support
@@ -267,18 +272,18 @@ export default function Journey() {
     const onTouchStart = (e: TouchEvent) => {
       isDragging = true;
       lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      velX = 0;
-      velY = 0;
+      velAzimuth = 0;
+      velElevation = 0;
     };
     const onTouchMove = (e: TouchEvent) => {
       if (!isDragging) return;
       e.preventDefault();
       const dx = e.touches[0].clientX - lastTouch.x;
       const dy = e.touches[0].clientY - lastTouch.y;
-      velX = -dx * PAN_SPEED;
-      velY = dy * PAN_SPEED;
-      target.x += velX;
-      target.y += velY;
+      velAzimuth = -dx * ROTATE_SPEED;
+      velElevation = -dy * ROTATE_SPEED;
+      target.azimuth += velAzimuth;
+      target.elevation = clampElevation(target.elevation + velElevation);
       lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     };
     const onTouchEnd = () => {
@@ -300,8 +305,8 @@ export default function Journey() {
         const dy = e.touches[0].clientY - e.touches[1].clientY;
         const dist = Math.sqrt(dx * dx + dy * dy);
         const delta = lastPinchDist - dist;
-        target.z += delta * 0.1;
-        target.z = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, target.z));
+        target.radius += delta * 0.1;
+        target.radius = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, target.radius));
         lastPinchDist = dist;
       }
     };
@@ -336,20 +341,31 @@ export default function Journey() {
 
       // Apply inertia when not dragging
       if (!isDragging) {
-        target.x += velX;
-        target.y += velY;
-        velX *= INERTIA;
-        velY *= INERTIA;
+        target.azimuth += velAzimuth;
+        target.elevation = clampElevation(target.elevation + velElevation);
+        velAzimuth *= INERTIA;
+        velElevation *= INERTIA;
       }
 
-      // Smooth camera lerp
-      current.x += (target.x - current.x) * EASING;
-      current.y += (target.y - current.y) * EASING;
-      current.z += (target.z - current.z) * EASING;
-      camera.position.set(current.x, current.y, current.z);
-      camera.lookAt(current.x, current.y, 0);
+      // Smooth camera lerp (azimuth needs shortest-path interpolation)
+      current.azimuth += (target.azimuth - current.azimuth) * EASING;
+      current.elevation += (target.elevation - current.elevation) * EASING;
+      current.radius += (target.radius - current.radius) * EASING;
 
-      // Subtle floating animation per plane
+      // Convert spherical coords to Cartesian camera position
+      const camX =
+        current.radius *
+        Math.cos(current.elevation) *
+        Math.sin(current.azimuth);
+      const camY = current.radius * Math.sin(current.elevation);
+      const camZ =
+        current.radius *
+        Math.cos(current.elevation) *
+        Math.cos(current.azimuth);
+      camera.position.set(camX, camY, camZ);
+      camera.lookAt(0, 0, 0);
+
+      // Subtle floating animation per plane; orient each plane to face camera
       for (const p of planes) {
         p.mesh.position.x =
           p.basePos.x +
@@ -360,6 +376,9 @@ export default function Journey() {
         p.mesh.position.z =
           p.basePos.z +
           Math.sin(elapsed * p.floatSpeed.z + p.floatPhase.z) * p.floatAmp.z;
+        // Keep each plane facing outward (away from sphere center) so the
+        // image is always legible as the camera rotates around the sphere.
+        p.mesh.lookAt(camera.position);
       }
 
       renderer.render(scene, camera);
