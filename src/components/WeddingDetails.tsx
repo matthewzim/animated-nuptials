@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ScrollPhotoSlideshow } from "./ScrollPhotoSlideshow";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 interface WeddingDetailsProps {
   isVisible: boolean;
@@ -154,6 +154,27 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Our Journey Section */}
+          <div
+            className="animate-fade-in-up p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-card transition-shadow duration-300"
+            style={{ animationDelay: "1.1s", animationFillMode: "both" }}
+          >
+            <h4 className="font-serif text-sm tracking-widest uppercase text-muted-foreground mb-3">
+              Our Journey
+            </h4>
+            <Link
+              to="/journey"
+              className={cn(
+                "font-elegant text-base text-foreground",
+                "underline underline-offset-4 decoration-border/60",
+                "hover:decoration-primary hover:text-primary",
+                "transition-colors duration-200"
+              )}
+            >
+              Explore Here
+            </Link>
           </div>
 
           {/* RSVP Section */}
