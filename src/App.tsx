@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Index from "./pages/Index";
 import RSVP from "./pages/RSVP";
+import Journey from "./pages/Journey";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -67,6 +68,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index onMusicStart={startMusic} />} />
             <Route path="/rsvp" element={<RSVP />} />
+            <Route path="/journey" element={<Journey />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
