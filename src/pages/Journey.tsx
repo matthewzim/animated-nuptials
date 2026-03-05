@@ -128,6 +128,8 @@ export default function Journey() {
     const planes: PlaneEntry[] = [];
 
     function spawnPlanes(textures: THREE.CanvasTexture[]) {
+      const SPHERE_RADIUS = 65;
+
       for (let i = 0; i < PLANE_COUNT; i++) {
         const texIndex = i % textures.length;
         const tex = textures[texIndex];
@@ -144,12 +146,17 @@ export default function Journey() {
         });
         const mesh = new THREE.Mesh(geom, mat);
 
-        // Scatter across a wide 3D volume
-        const x = THREE.MathUtils.randFloatSpread(140);
-        const y = THREE.MathUtils.randFloatSpread(90);
-        const z = THREE.MathUtils.randFloat(-90, 8);
+        // Distribute across a sphere surface (uniform distribution)
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const r = THREE.MathUtils.randFloat(SPHERE_RADIUS * 0.85, SPHERE_RADIUS * 1.15);
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.cos(phi);
+        const z = r * Math.sin(phi) * Math.sin(theta);
 
         mesh.position.set(x, y, z);
+        // Face each plane toward the sphere center so images are visible from inside
+        mesh.lookAt(new THREE.Vector3(0, 0, 0));
         scene.add(mesh);
 
         planes.push({
@@ -222,7 +229,7 @@ export default function Journey() {
     const ZOOM_SPEED = 0.05;
     const EASING = 0.08;
     const INERTIA = 0.91;
-    const ZOOM_MIN = 15;
+    const ZOOM_MIN = 3;
     const ZOOM_MAX = 160;
 
     const onMouseDown = (e: MouseEvent) => {
