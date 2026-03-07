@@ -67,7 +67,7 @@ const RSVP = () => {
       setIsSubmitted(true);
       toast({
         title: "RSVP Submitted!",
-        description: "Thank you for your response. We can't wait to celebrate with you!",
+        description: "Thank you for your response.",
       });
     } catch (error) {
       console.error("Error submitting RSVP:", error);
