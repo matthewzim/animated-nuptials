@@ -9,6 +9,53 @@ import beachSrc from "@/assets/photos/beach-sunset.jpeg";
 import mountainsSrc from "@/assets/photos/mountains.jpeg";
 import netherlandsSrc from "@/assets/photos/netherlands.jpeg";
 
+import photo1 from "@/assets/photos/1.jpg";
+import photo2 from "@/assets/photos/2.jpg";
+import photo3 from "@/assets/photos/3.jpg";
+import photoIMG1412 from "@/assets/photos/IMG_1412.jpg";
+import photoIMG1506 from "@/assets/photos/IMG_1506.jpg";
+import photoIMG1554 from "@/assets/photos/IMG_1554.jpg";
+import photoIMG1804 from "@/assets/photos/IMG_1804.jpg";
+import photoIMG2503 from "@/assets/photos/IMG_2503.jpg";
+import photoIMG2528 from "@/assets/photos/IMG_2528.jpg";
+import photoIMG2543 from "@/assets/photos/IMG_2543.jpg";
+import photoIMG2914 from "@/assets/photos/IMG_2914.jpg";
+import photoIMG2938 from "@/assets/photos/IMG_2938.jpg";
+import photoIMG3019 from "@/assets/photos/IMG_3019.jpg";
+import photoIMG3030 from "@/assets/photos/IMG_3030.jpg";
+import photoIMG3657 from "@/assets/photos/IMG_3657.jpg";
+import photoIMG3778 from "@/assets/photos/IMG_3778.jpg";
+import photoIMG3814 from "@/assets/photos/IMG_3814.jpg";
+import photoIMG3844 from "@/assets/photos/IMG_3844.jpg";
+import photoIMG4127 from "@/assets/photos/IMG_4127.jpg";
+import photoIMG4353 from "@/assets/photos/IMG_4353.jpg";
+import photoIMG4533 from "@/assets/photos/IMG_4533.jpg";
+import photoIMG4619 from "@/assets/photos/IMG_4619.jpg";
+import photoIMG4689 from "@/assets/photos/IMG_4689.jpg";
+import photoIMG4846 from "@/assets/photos/IMG_4846_2.jpg";
+import photoIMG5744 from "@/assets/photos/IMG_5744.jpg";
+import photoIMG6279 from "@/assets/photos/IMG_6279.jpg";
+import photoIMG6480 from "@/assets/photos/IMG_6480.jpg";
+import photoIMG6666 from "@/assets/photos/IMG_6666.jpg";
+import photoIMG6697 from "@/assets/photos/IMG_6697.jpg";
+import photoIMG6708 from "@/assets/photos/IMG_6708.jpg";
+import photoIMG7209 from "@/assets/photos/IMG_7209.jpg";
+import photoIMG7397 from "@/assets/photos/IMG_7397_2.jpg";
+import photoIMG7569 from "@/assets/photos/IMG_7569_2.jpg";
+import photoIMG7708 from "@/assets/photos/IMG_7708.jpg";
+import photoIMG7730 from "@/assets/photos/IMG_7730_2.jpg";
+import photoIMG7740 from "@/assets/photos/IMG_7740.jpg";
+import photoIMG7753 from "@/assets/photos/IMG_7753.jpg";
+import photoIMG7925 from "@/assets/photos/IMG_7925_2.jpg";
+import photoIMG8017 from "@/assets/photos/IMG_8017.jpg";
+import photoIMG8513 from "@/assets/photos/IMG_8513_2.jpg";
+import photoIMG8809 from "@/assets/photos/IMG_8809_2.jpg";
+import photoIMG8831 from "@/assets/photos/IMG_8831.jpg";
+import photoIMG9387 from "@/assets/photos/IMG_9387.jpg";
+import photoIMG9478 from "@/assets/photos/IMG_9478.jpg";
+import photoIMG9887 from "@/assets/photos/IMG_9887.jpg";
+import photoIMG9993 from "@/assets/photos/IMG_9993.jpg";
+
 const PHOTO_SRCS = [
   engagementSrc,
   parisSrc,
@@ -16,6 +63,52 @@ const PHOTO_SRCS = [
   beachSrc,
   mountainsSrc,
   netherlandsSrc,
+  photo1,
+  photo2,
+  photo3,
+  photoIMG1412,
+  photoIMG1506,
+  photoIMG1554,
+  photoIMG1804,
+  photoIMG2503,
+  photoIMG2528,
+  photoIMG2543,
+  photoIMG2914,
+  photoIMG2938,
+  photoIMG3019,
+  photoIMG3030,
+  photoIMG3657,
+  photoIMG3778,
+  photoIMG3814,
+  photoIMG3844,
+  photoIMG4127,
+  photoIMG4353,
+  photoIMG4533,
+  photoIMG4619,
+  photoIMG4689,
+  photoIMG4846,
+  photoIMG5744,
+  photoIMG6279,
+  photoIMG6480,
+  photoIMG6666,
+  photoIMG6697,
+  photoIMG6708,
+  photoIMG7209,
+  photoIMG7397,
+  photoIMG7569,
+  photoIMG7708,
+  photoIMG7730,
+  photoIMG7740,
+  photoIMG7753,
+  photoIMG7925,
+  photoIMG8017,
+  photoIMG8513,
+  photoIMG8809,
+  photoIMG8831,
+  photoIMG9387,
+  photoIMG9478,
+  photoIMG9887,
+  photoIMG9993,
 ];
 
 const PLANE_COUNT = 120;
