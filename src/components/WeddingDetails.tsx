@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ScrollPhotoSlideshow } from "./ScrollPhotoSlideshow";
+import { FloralBorder } from "./FloralBorder";
 import { useNavigate, Link } from "react-router-dom";
 
 interface WeddingDetailsProps {
@@ -24,10 +25,12 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
         </div>
 
         {/* Right: Scrollable Wedding Details - only this column scrolls */}
-        <div 
-          className="lg:w-1/2 h-[50vh] lg:h-full overflow-y-auto space-y-8 px-8 lg:px-12 py-16" 
+        <div
+          className="lg:w-1/2 h-[50vh] lg:h-full overflow-y-auto"
           data-details-content
         >
+          <FloralBorder />
+          <div className="relative z-10 space-y-8 px-8 lg:px-12 py-16">
           {/* Traditional Invitation Header */}
           <div
             className="text-center mb-12 animate-fade-in-up"
@@ -259,6 +262,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             <p className="font-script text-2xl md:text-3xl text-dusty-rose">
               We can't wait to celebrate with you
             </p>
+          </div>
           </div>
         </div>
       </div>
