@@ -76,7 +76,7 @@ export default {
         "dusty-rose": "hsl(var(--dusty-rose))",
       },
       fontFamily: {
-        script: ["Great Vibes", "cursive"],
+        script: ["Ephesis", "cursive"],
         serif: ["Playfair Display", "serif"],
         elegant: ["Cormorant Garamond", "serif"],
       },
