@@ -102,38 +102,57 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             </p>
           </div>
 
+          {/* Decorative divider */}
+          <div className="flex items-center justify-center gap-4 my-4 animate-fade-in-up" style={{ animationDelay: "0.7s", animationFillMode: "both" }}>
+            <div className="h-px w-16 bg-muted-foreground/30" />
+            <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
+            <div className="h-px w-16 bg-muted-foreground/30" />
+          </div>
+
           {/* Timeline Section */}
-          <div 
-            className="animate-fade-in-up p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50"
+          <div
+            className="text-center animate-fade-in-up"
             style={{ animationDelay: "0.8s", animationFillMode: "both" }}
           >
-            <h4 className="font-serif text-sm tracking-widest uppercase text-muted-foreground mb-6">
-              Timeline
+            <h4 className="font-elegant text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground mb-8">
+              Order of the Day
             </h4>
-            <div className="space-y-4">
+            <div className="space-y-5">
               {[
                 { time: "2:00 PM", event: "Arrival" },
                 { time: "2:30 PM", event: "Ceremony" },
                 { time: "4:00 PM", event: "Cocktail Hour" },
                 { time: "5:30 PM", event: "Reception" },
               ].map((item, index) => (
-                <div key={index} className="flex items-center gap-4">
-                  <span className="font-elegant text-lg text-primary min-w-[80px]">{item.time}</span>
-                  <span className="font-elegant text-lg text-foreground">{item.event}</span>
+                <div key={index} className="flex items-center justify-center gap-4">
+                  <span className="font-elegant text-sm tracking-[0.15em] uppercase text-muted-foreground min-w-[80px] text-right">
+                    {item.time}
+                  </span>
+                  <div className="h-px w-6 bg-muted-foreground/30" />
+                  <span className="font-script text-xl md:text-2xl text-foreground min-w-[140px] text-left">
+                    {item.event}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
 
+          {/* Decorative divider */}
+          <div className="flex items-center justify-center gap-4 my-4 animate-fade-in-up" style={{ animationDelay: "0.9s", animationFillMode: "both" }}>
+            <div className="h-px w-16 bg-muted-foreground/30" />
+            <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
+            <div className="h-px w-16 bg-muted-foreground/30" />
+          </div>
+
           {/* FAQ Section */}
-          <div 
-            className="animate-fade-in-up"
+          <div
+            className="text-center animate-fade-in-up"
             style={{ animationDelay: "1s", animationFillMode: "both" }}
           >
-            <h4 className="font-serif text-sm tracking-widest uppercase text-muted-foreground mb-6">
-              FAQ
+            <h4 className="font-elegant text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground mb-10">
+              Guest Information
             </h4>
-            <div className="space-y-6">
+            <div className="space-y-8">
               {[
                 {
                   question: "Dress Code",
@@ -160,14 +179,11 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                   answer: "We'll post our registry here in the coming months."
                 }
               ].map((faq, index) => (
-                <div 
-                  key={index} 
-                  className="p-5 rounded-lg bg-card/30 backdrop-blur-sm border border-border/50"
-                >
-                  <h5 className="font-serif text-base text-foreground mb-2">
+                <div key={index} className="text-center">
+                  <h5 className="font-serif text-base md:text-lg tracking-wide text-foreground mb-2">
                     {faq.question}
                   </h5>
-                  <p className="font-elegant text-sm text-muted-foreground leading-relaxed">
+                  <p className="font-elegant text-sm md:text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
                     {faq.answer}
                   </p>
                 </div>
@@ -175,61 +191,73 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             </div>
           </div>
 
+          {/* Decorative divider */}
+          <div className="flex items-center justify-center gap-4 my-4 animate-fade-in-up" style={{ animationDelay: "1.05s", animationFillMode: "both" }}>
+            <div className="h-px w-16 bg-muted-foreground/30" />
+            <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
+            <div className="h-px w-16 bg-muted-foreground/30" />
+          </div>
+
           {/* Our Journey Section */}
           <div
-            className="animate-fade-in-up p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-card transition-shadow duration-300"
+            className="text-center animate-fade-in-up"
             style={{ animationDelay: "1.1s", animationFillMode: "both" }}
           >
-            <h4 className="font-serif text-sm tracking-widest uppercase text-muted-foreground mb-3">
+            <h4 className="font-elegant text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground mb-4">
               Our Journey
             </h4>
             <Link
               to="/journey"
               className={cn(
-                "font-elegant text-base text-foreground",
-                "underline underline-offset-4 decoration-border/60",
-                "hover:decoration-primary hover:text-primary",
+                "font-script text-2xl md:text-3xl text-foreground",
+                "hover:text-primary",
                 "transition-colors duration-200"
               )}
             >
-              Explore Here
+              Explore our story
             </Link>
           </div>
 
+          {/* Decorative divider */}
+          <div className="flex items-center justify-center gap-4 my-4 animate-fade-in-up" style={{ animationDelay: "1.15s", animationFillMode: "both" }}>
+            <div className="h-px w-16 bg-muted-foreground/30" />
+            <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
+            <div className="h-px w-16 bg-muted-foreground/30" />
+          </div>
+
           {/* RSVP Section */}
-          <div 
-            className="mt-12 text-center animate-fade-in-up p-8 rounded-lg bg-card/30 backdrop-blur-sm border border-border/50"
+          <div
+            className="text-center animate-fade-in-up py-4"
             style={{ animationDelay: "1.2s", animationFillMode: "both" }}
           >
-            <p className="font-elegant text-muted-foreground mb-6">
-              We would be honored by your presence
+            <p className="font-script text-2xl md:text-3xl text-muted-foreground mb-6">
+              We would be honoured by your presence
             </p>
             <button
               onClick={() => navigate("/rsvp")}
               className={cn(
-                "px-8 py-3 rounded-full",
-                "font-elegant text-sm tracking-widest uppercase",
-                "bg-primary text-primary-foreground",
-                "border border-gold/30",
-                "shadow-lg hover:shadow-xl",
-                "transition-all duration-300",
-                "hover:scale-105 hover:bg-primary/90"
+                "px-10 py-3",
+                "font-elegant text-sm md:text-base tracking-[0.3em] uppercase",
+                "text-foreground",
+                "border border-muted-foreground/40",
+                "hover:bg-foreground hover:text-background",
+                "transition-all duration-300"
               )}
             >
-              RSVP
+              Kindly Respond
             </button>
-            <p className="mt-4 font-elegant text-sm text-muted-foreground tracking-wide">
-              Please respond by May 1st, 2026.
+            <p className="mt-6 font-elegant text-sm tracking-[0.15em] uppercase text-muted-foreground">
+              Please respond by May 1st, 2026
             </p>
           </div>
 
           {/* Footer message */}
-          <div 
-            className="mt-12 text-center lg:text-left animate-fade-in-up"
-            style={{ animationDelay: "1s", animationFillMode: "both" }}
+          <div
+            className="text-center py-8 animate-fade-in-up"
+            style={{ animationDelay: "1.3s", animationFillMode: "both" }}
           >
-            <p className="font-script text-2xl text-dusty-rose">
-              We can't wait to celebrate with you.
+            <p className="font-script text-2xl md:text-3xl text-dusty-rose">
+              We can't wait to celebrate with you
             </p>
           </div>
         </div>
