@@ -8,6 +8,21 @@ interface WeddingDetailsProps {
 
 export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
   const navigate = useNavigate();
+  const details = [
+    {
+      content: "August 8th, 2026",
+      delay: "0.2s",
+    },
+    {
+      content: "2:00 PM Arrival // 2:30 PM Ceremony",
+      delay: "0.4s",
+    },
+    {
+      content: "UBC Botanical Garden",
+      subContent: "6804 SW Marine Dr, Vancouver, BC V6T 2J9",
+      delay: "0.6s",
+    },
+  ];
 
   if (!isVisible) return null;
 
@@ -28,79 +43,45 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
           className="lg:w-1/2 h-[50vh] lg:h-full overflow-y-auto space-y-8 px-8 lg:px-12 py-16" 
           data-details-content
         >
-          {/* Traditional Invitation Header */}
-          <div
-            className="text-center mb-12 animate-fade-in-up"
-            style={{ animationDelay: "0.1s", animationFillMode: "both" }}
+          {/* Header - Now on right side */}
+          <div 
+            className="text-center lg:text-left mb-8 animate-fade-in-up"
+            style={{ animationDelay: "0.1s" }}
           >
-            <p className="font-script text-2xl md:text-3xl text-muted-foreground mb-8">
-              Together with their families
+            <p className="font-elegant text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
+              The Wedding Of
             </p>
-
-            <h2 className="font-serif text-4xl md:text-5xl tracking-[0.15em] uppercase text-foreground mb-3">
-              Matthew
-            </h2>
-            <p className="font-script text-3xl md:text-4xl text-muted-foreground my-2">
-              and
-            </p>
-            <h2 className="font-serif text-4xl md:text-5xl tracking-[0.15em] uppercase text-foreground mt-3">
-              Morgan
-            </h2>
-
-            <p className="font-elegant text-sm md:text-base tracking-[0.3em] uppercase text-muted-foreground mt-8">
-              Joyfully Invite You To Their Wedding
-            </p>
+            <h3 className="font-script text-5xl md:text-6xl text-stone-600">
+              Matthew & Morgan
+            </h3>
           </div>
-
-          {/* Date & Venue Block — traditional layout with vertical divider */}
-          <div
-            className="animate-fade-in-up flex justify-center mb-8"
-            style={{ animationDelay: "0.4s", animationFillMode: "both" }}
-          >
-            <div className="flex items-center gap-6 md:gap-8">
-              {/* Date Column */}
-              <div className="text-center">
-                <p className="font-elegant text-sm md:text-base tracking-[0.25em] uppercase text-muted-foreground">
-                  August
+          {details.map((detail, index) => (
+            <div
+              key={index}
+              className={cn(
+                "p-6 rounded-lg",
+                "bg-card/50 backdrop-blur-sm",
+                "border border-border/50",
+                "animate-fade-in-up",
+                "hover:shadow-card transition-shadow duration-300"
+              )}
+              style={{ 
+                animationDelay: detail.delay,
+                animationFillMode: "both"
+              }}
+            >
+              <div>
+                <p className="font-elegant text-xl text-foreground">
+                  {detail.content}
                 </p>
-                <p className="font-serif text-6xl md:text-7xl text-foreground leading-none my-1">
-                  8
-                </p>
-                <p className="font-elegant text-sm md:text-base tracking-[0.25em] uppercase text-muted-foreground">
-                  2026
-                </p>
-              </div>
-
-              {/* Vertical Divider */}
-              <div className="w-px h-28 bg-muted-foreground/40" />
-
-              {/* Venue Column */}
-              <div className="text-left">
-                <p className="font-script text-2xl md:text-3xl text-foreground leading-tight">
-                  UBC Botanical Garden
-                </p>
-                <p className="font-elegant text-xs md:text-sm tracking-[0.15em] uppercase text-muted-foreground mt-1">
-                  6804 SW Marine Dr
-                </p>
-                <p className="font-elegant text-xs md:text-sm tracking-[0.15em] uppercase text-muted-foreground">
-                  Vancouver, BC
-                </p>
-                <p className="font-script text-lg md:text-xl text-muted-foreground mt-2">
-                  at 2 o'clock in the afternoon
-                </p>
+                {detail.subContent && (
+                  <p className="font-elegant text-sm text-muted-foreground mt-1">
+                    {detail.subContent}
+                  </p>
+                )}
               </div>
             </div>
-          </div>
-
-          {/* Reception note */}
-          <div
-            className="text-center mb-8 animate-fade-in-up"
-            style={{ animationDelay: "0.6s", animationFillMode: "both" }}
-          >
-            <p className="font-script text-2xl md:text-3xl text-muted-foreground">
-              Reception to follow
-            </p>
-          </div>
+          ))}
 
           {/* Timeline Section */}
           <div 
