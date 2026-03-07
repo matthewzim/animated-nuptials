@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ScrollPhotoSlideshow } from "./ScrollPhotoSlideshow";
+import { SquiggleBorder } from "./SquiggleBorder";
 
 import { useNavigate, Link } from "react-router-dom";
 
@@ -44,7 +45,8 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
           className="lg:w-1/2 h-[50vh] lg:h-full overflow-y-auto"
           data-details-content
         >
-          <div className="space-y-8 px-8 lg:px-12 py-16 m-6 border border-[#7ba4c9]/40 rounded">
+          <div className="relative space-y-8 px-8 lg:px-12 py-16 m-6">
+            <SquiggleBorder color="#1e4d7a" strokeWidth={3} loopSize={14} />
           {/* Traditional Invitation Header */}
           <div
             className="text-center mb-12 animate-fade-in-up"
