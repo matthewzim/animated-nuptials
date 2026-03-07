@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SquiggleBorder } from './SquiggleBorder';
-
 interface EnvelopeProps {
   onOpen?: () => void;
 }
@@ -35,7 +33,6 @@ export default function Envelope({ onOpen }: EnvelopeProps) {
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-[#edf5ff] px-4">
-      <SquiggleBorder color="#1e4d7a" strokeWidth={3} loopSize={14} className="z-[60] m-2" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.85),transparent_50%),radial-gradient(circle_at_80%_70%,rgba(214,231,255,0.7),transparent_45%)]" />
 
       <div className="relative w-full max-w-xl md:max-w-2xl aspect-[4/3]">
