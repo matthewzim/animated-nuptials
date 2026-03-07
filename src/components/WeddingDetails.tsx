@@ -60,28 +60,20 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
           {details.map((detail, index) => (
             <div
               key={index}
-              className={cn(
-                "p-6 rounded-lg",
-                "bg-card/50 backdrop-blur-sm",
-                "border border-border/50",
-                "animate-fade-in-up",
-                "hover:shadow-card transition-shadow duration-300"
-              )}
-              style={{ 
+              className="text-center animate-fade-in-up"
+              style={{
                 animationDelay: detail.delay,
                 animationFillMode: "both"
               }}
             >
-              <div>
-                <p className="font-elegant text-xl text-foreground">
-                  {detail.content}
+              <p className="font-serif text-base md:text-lg tracking-wide text-foreground">
+                {detail.content}
+              </p>
+              {detail.subContent && (
+                <p className="font-elegant text-sm text-muted-foreground mt-1">
+                  {detail.subContent}
                 </p>
-                {detail.subContent && (
-                  <p className="font-elegant text-sm text-muted-foreground mt-1">
-                    {detail.subContent}
-                  </p>
-                )}
-              </div>
+              )}
             </div>
           ))}
 
