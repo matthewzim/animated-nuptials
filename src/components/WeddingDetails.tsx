@@ -226,15 +226,6 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             </p>
           </div>
 
-          {/* Footer message */}
-          <div
-            className="text-center py-8 animate-fade-in-up"
-            style={{ animationDelay: "1.3s", animationFillMode: "both" }}
-          >
-            <p className="font-script text-2xl md:text-3xl text-dusty-rose">
-              We can't wait to celebrate with you
-            </p>
-          </div>
           </div>
         </div>
       </div>
