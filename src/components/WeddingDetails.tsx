@@ -43,7 +43,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
           className="lg:w-1/2 h-[50vh] lg:h-full overflow-y-auto"
           data-details-content
         >
-          <div className="relative space-y-8 px-8 lg:px-12 py-16 m-6 border border-[#7bafd4] outline outline-1 outline-[#7bafd4] outline-offset-4">
+          <div className="relative space-y-8 px-8 lg:px-12 py-16 m-6">
           {/* Traditional Invitation Header */}
           <div
             className="text-center mb-12 animate-fade-in-up"
@@ -223,6 +223,18 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             <p className="mt-6 font-elegant text-sm tracking-[0.15em] uppercase text-muted-foreground">
               Please respond by May 1st, 2026
             </p>
+          </div>
+
+          {/* Flower background image */}
+          <div
+            className="animate-fade-in-up mt-8"
+            style={{ animationDelay: "1.3s", animationFillMode: "both" }}
+          >
+            <img
+              src="/flowerback.png"
+              alt="Floral decoration"
+              className="w-full object-contain"
+            />
           </div>
 
           </div>
