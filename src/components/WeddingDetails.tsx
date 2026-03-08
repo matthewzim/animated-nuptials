@@ -223,9 +223,6 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             <p className="mt-6 font-elegant text-sm tracking-[0.15em] uppercase text-muted-foreground">
               Please respond by May 1st, 2026
             </p>
-            <p className="mt-2 font-elegant text-sm tracking-[0.15em] text-muted-foreground">
-              We kindly ask that you bring only the guest(s) specified on your invitation.
-            </p>
           </div>
 
           </div>
