@@ -210,7 +210,7 @@ export default function Journey() {
       0.1,
       600
     );
-    camera.position.set(0, 0, 115);
+    camera.position.set(0, 0, 170);
 
     // ─── Lighting ────────────────────────────────────────────────────────────
     scene.add(new THREE.AmbientLight(0xffffff, 1.0));
@@ -314,7 +314,7 @@ export default function Journey() {
     let velAzimuth = 0;
     let velElevation = 0;
     // Spherical camera coordinates: azimuth (horizontal), elevation (vertical), radius (zoom)
-    const INITIAL_RADIUS = 115;
+    const INITIAL_RADIUS = 170;
     const target = { azimuth: 0, elevation: 0, radius: INITIAL_RADIUS };
     const current = { azimuth: 0, elevation: 0, radius: INITIAL_RADIUS };
     const ROTATE_SPEED = 0.004;
@@ -322,7 +322,7 @@ export default function Journey() {
     const EASING = 0.08;
     const INERTIA = 0.91;
     const ZOOM_MIN = 30;
-    const ZOOM_MAX = 200;
+    const ZOOM_MAX = 250;
     const ELEV_LIMIT = Math.PI / 2 - 0.08;
 
     const clampElevation = (v: number) =>
@@ -556,7 +556,7 @@ export default function Journey() {
 
       {/* Instructions */}
       <div className="absolute bottom-6 left-0 right-0 flex justify-center z-10 pointer-events-none">
-        <p className="font-elegant text-white/30 text-xs tracking-widest uppercase">
+        <p className="font-elegant text-white text-lg font-bold tracking-widest uppercase">
           Drag to explore&nbsp;&nbsp;·&nbsp;&nbsp;Scroll to zoom
         </p>
       </div>
