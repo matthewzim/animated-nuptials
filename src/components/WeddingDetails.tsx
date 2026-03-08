@@ -229,7 +229,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
 
           {/* Flower background image - flush to bottom, left, and right */}
           <div
-            className="animate-fade-in-up -mt-16"
+            className="animate-fade-in-up -mt-24"
             style={{ animationDelay: "1.3s", animationFillMode: "both" }}
           >
             <img
