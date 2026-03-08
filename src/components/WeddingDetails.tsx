@@ -137,6 +137,10 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                   answer: "Please note that parking at the venue is very limited and will be reserved for setup assistance. Consider parking at Thunderbird Stadium or throughout UBC campus. We encourage guests to carpool or Uber where possible."
                 },
                 {
+                  question: "Am I allowed to bring a plus one?",
+                  answer: "We kindly ask that you bring only the guest(s) specified on your invitation."
+                },
+                {
                   question: "What time should I arrive at your wedding ceremony?",
                   answer: "We recommend arriving by 2:00PM to give yourself plenty of time to settle in before the ceremony starts at 2:30PM. We can't wait to see you there!"
                 },
