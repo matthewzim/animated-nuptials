@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import * as THREE from "three";
 
-import engagementSrc from "@/assets/photos/engagement.jpeg";
 import parisSrc from "@/assets/photos/paris.jpeg";
 import annecySrc from "@/assets/photos/annecy.jpeg";
 import beachSrc from "@/assets/photos/beach-sunset.jpeg";
@@ -57,7 +56,6 @@ import photoIMG9887 from "@/assets/photos/IMG_9887.jpg";
 import photoIMG9993 from "@/assets/photos/IMG_9993.jpg";
 
 const PHOTO_SRCS = [
-  engagementSrc,
   parisSrc,
   annecySrc,
   beachSrc,

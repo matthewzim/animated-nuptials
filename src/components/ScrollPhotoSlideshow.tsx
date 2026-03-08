@@ -4,13 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 // Import photos
 import parisPhoto from '@/assets/photos/paris.jpeg';
 import annecyPhoto from '@/assets/photos/annecy.jpeg';
-import engagementPhoto from '@/assets/photos/engagement.jpeg';
 import beachSunsetPhoto from '@/assets/photos/beach-sunset.jpeg';
 import mountainsPhoto from '@/assets/photos/mountains.jpeg';
 import netherlandsPhoto from '@/assets/photos/netherlands.jpeg';
 
 const photos = [
-  engagementPhoto,
   parisPhoto,
   annecyPhoto,
   beachSunsetPhoto,
