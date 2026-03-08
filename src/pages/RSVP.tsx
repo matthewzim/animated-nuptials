@@ -12,12 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Minus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const GOOGLE_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbw3bgUZl76Mr4JaFgOHawq8dYXp7l-oBGbBFRLIFZpEaD0DWM_zc1Nk0y6psV8uRJVTRQ/exec";
 
+const MAX_GUESTS = 6;
 const TOTAL_STEPS = 6;
 
 const RSVP = () => {
@@ -27,9 +28,9 @@ const RSVP = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    attending: "",
+    names: [""],
+    emails: [""],
+    attendingList: [""],
     dietary: "",
     songRequest: "",
     message: "",
@@ -40,7 +41,11 @@ const RSVP = () => {
       return;
     }
 
-    if (!formData.name.trim() || !formData.email.trim() || !formData.attending) {
+    const hasEmptyName = formData.names.some((n) => !n.trim());
+    const hasEmptyEmail = formData.emails.some((e) => !e.trim());
+    const hasEmptyAttending = formData.attendingList.some((a) => !a);
+
+    if (hasEmptyName || hasEmptyEmail || hasEmptyAttending) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -59,7 +64,12 @@ const RSVP = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...formData,
+          name: formData.names.join(", "),
+          email: formData.emails.join(", "),
+          attending: formData.attendingList.join(", "),
+          dietary: formData.dietary,
+          songRequest: formData.songRequest,
+          message: formData.message,
           timestamp: new Date().toISOString(),
         }),
       });
@@ -81,36 +91,107 @@ const RSVP = () => {
     }
   };
 
+  const handleNameChange = (index: number, value: string) => {
+    setFormData((prev) => {
+      const names = [...prev.names];
+      names[index] = value;
+      return { ...prev, names };
+    });
+  };
+
+  const handleEmailChange = (index: number, value: string) => {
+    setFormData((prev) => {
+      const emails = [...prev.emails];
+      emails[index] = value;
+      return { ...prev, emails };
+    });
+  };
+
+  const handleAttendingChange = (index: number, value: string) => {
+    setFormData((prev) => {
+      const attendingList = [...prev.attendingList];
+      attendingList[index] = value;
+      return { ...prev, attendingList };
+    });
+  };
+
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const addName = () => {
+    if (formData.names.length < MAX_GUESTS) {
+      setFormData((prev) => ({
+        ...prev,
+        names: [...prev.names, ""],
+        attendingList: [...prev.attendingList, ""],
+      }));
+    }
+  };
+
+  const removeName = (index: number) => {
+    if (formData.names.length > 1) {
+      setFormData((prev) => ({
+        ...prev,
+        names: prev.names.filter((_, i) => i !== index),
+        attendingList: prev.attendingList.filter((_, i) => i !== index),
+      }));
+    }
+  };
+
+  const addEmail = () => {
+    if (formData.emails.length < MAX_GUESTS) {
+      setFormData((prev) => ({
+        ...prev,
+        emails: [...prev.emails, ""],
+      }));
+    }
+  };
+
+  const removeEmail = (index: number) => {
+    if (formData.emails.length > 1) {
+      setFormData((prev) => ({
+        ...prev,
+        emails: prev.emails.filter((_, i) => i !== index),
+      }));
+    }
+  };
+
   const goToNextStep = () => {
-    if (currentStep === 0 && !formData.name.trim()) {
-      toast({
-        title: "Full Name Required",
-        description: "Please enter your full name before continuing.",
-        variant: "destructive",
-      });
-      return;
+    if (currentStep === 0) {
+      const hasEmptyName = formData.names.some((n) => !n.trim());
+      if (hasEmptyName) {
+        toast({
+          title: "Full Name Required",
+          description: "Please enter a full name for each guest.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
-    if (currentStep === 1 && !formData.email.trim()) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address before continuing.",
-        variant: "destructive",
-      });
-      return;
+    if (currentStep === 1) {
+      const hasEmptyEmail = formData.emails.some((e) => !e.trim());
+      if (hasEmptyEmail) {
+        toast({
+          title: "Email Required",
+          description: "Please enter an email for each entry.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
-    if (currentStep === 2 && !formData.attending) {
-      toast({
-        title: "RSVP Response Required",
-        description: "Please select whether you can attend.",
-        variant: "destructive",
-      });
-      return;
+    if (currentStep === 2) {
+      const hasEmptyAttending = formData.attendingList.some((a) => !a);
+      if (hasEmptyAttending) {
+        toast({
+          title: "RSVP Response Required",
+          description: "Please select a response for each guest.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS - 1));
@@ -125,55 +206,116 @@ const RSVP = () => {
       case 0:
         return (
           <div className="animate-fade-in-up">
-            <Label htmlFor="name" className="text-foreground font-medium">
-              Full Name *
+            <Label className="text-foreground font-medium">
+              Full Name{formData.names.length > 1 ? "s" : ""} *
             </Label>
-            <Input
-              id="name"
-              type="text"
-              required
-              placeholder="Enter your full name"
-              value={formData.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              className="mt-2 bg-card/50 border-border/50 focus:border-primary"
-            />
+            <div className="space-y-3 mt-2">
+              {formData.names.map((name, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    required
+                    placeholder={index === 0 ? "Enter your full name" : `Guest ${index + 1} full name`}
+                    value={name}
+                    onChange={(e) => handleNameChange(index, e.target.value)}
+                    className="bg-card/50 border-border/50 focus:border-primary"
+                  />
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => removeName(index)}
+                      className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {formData.names.length < MAX_GUESTS && (
+              <button
+                type="button"
+                onClick={addName}
+                className="mt-3 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span className="w-7 h-7 flex items-center justify-center rounded-full border border-border/50 hover:border-foreground/30 transition-colors">
+                  <Plus className="w-4 h-4" />
+                </span>
+                Add another guest
+              </button>
+            )}
           </div>
         );
       case 1:
         return (
           <div className="animate-fade-in-up">
-            <Label htmlFor="email" className="text-foreground font-medium">
-              Email Address *
+            <Label className="text-foreground font-medium">
+              Email Address{formData.emails.length > 1 ? "es" : ""} *
             </Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-              className="mt-2 bg-card/50 border-border/50 focus:border-primary"
-            />
+            <div className="space-y-3 mt-2">
+              {formData.emails.map((email, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <Input
+                    type="email"
+                    required
+                    placeholder={index === 0 ? "Enter your email" : `Email address ${index + 1}`}
+                    value={email}
+                    onChange={(e) => handleEmailChange(index, e.target.value)}
+                    className="bg-card/50 border-border/50 focus:border-primary"
+                  />
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => removeEmail(index)}
+                      className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {formData.emails.length < MAX_GUESTS && (
+              <button
+                type="button"
+                onClick={addEmail}
+                className="mt-3 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span className="w-7 h-7 flex items-center justify-center rounded-full border border-border/50 hover:border-foreground/30 transition-colors">
+                  <Plus className="w-4 h-4" />
+                </span>
+                Add another email
+              </button>
+            )}
           </div>
         );
       case 2:
         return (
           <div className="animate-fade-in-up">
-            <Label htmlFor="attending" className="text-foreground font-medium">
+            <Label className="text-foreground font-medium">
               Will you be attending? *
             </Label>
-            <Select
-              value={formData.attending}
-              onValueChange={(value) => handleChange("attending", value)}
-            >
-              <SelectTrigger className="mt-2 bg-card/50 border-border/50">
-                <SelectValue placeholder="Select your response" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="yes">Joyfully Accept</SelectItem>
-                <SelectItem value="no">Regretfully Decline</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="space-y-4 mt-2">
+              {formData.names.map((name, index) => (
+                <div key={index}>
+                  <p className="text-sm text-muted-foreground mb-1">
+                    {name.trim() || `Guest ${index + 1}`}
+                  </p>
+                  <Select
+                    value={formData.attendingList[index] || ""}
+                    onValueChange={(value) => handleAttendingChange(index, value)}
+                  >
+                    <SelectTrigger className="bg-card/50 border-border/50">
+                      <SelectValue placeholder="Select your response" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yes">Joyfully Accept</SelectItem>
+                      <SelectItem value="no">Respectfully Decline</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
+            </div>
           </div>
         );
       case 3:
