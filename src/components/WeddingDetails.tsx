@@ -225,18 +225,18 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             </p>
           </div>
 
-          {/* Flower background image */}
+          </div>
+
+          {/* Flower background image - flush to bottom, left, and right */}
           <div
-            className="animate-fade-in-up mt-8"
+            className="animate-fade-in-up"
             style={{ animationDelay: "1.3s", animationFillMode: "both" }}
           >
             <img
               src="/flowerback.png"
               alt="Floral decoration"
-              className="w-full object-contain"
+              className="w-full block"
             />
-          </div>
-
           </div>
         </div>
       </div>
