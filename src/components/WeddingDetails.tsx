@@ -142,7 +142,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                 },
                 {
                   question: "What time should I arrive at your wedding ceremony?",
-                  answer: "We recommend arriving by 2:30PM to give yourself plenty of time to settle in before the ceremony starts at 3PM. We can't wait to see you there!"
+                  answer: "We recommend arriving by 2:00PM to give yourself plenty of time to settle in before the ceremony starts at 2:30PM. We can't wait to see you there!"
                 },
                 {
                   question: "Will your wedding be indoors or outdoors?",
