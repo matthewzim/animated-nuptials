@@ -16,7 +16,7 @@ import { ArrowLeft, Loader2, Plus, Minus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const GOOGLE_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbw3bgUZl76Mr4JaFgOHawq8dYXp7l-oBGbBFRLIFZpEaD0DWM_zc1Nk0y6psV8uRJVTRQ/exec";
+  "https://script.google.com/macros/s/AKfycbzH71yU4JUZDOFvL67baIMZGxQ4nB3wS-a07IDEYZx0qtPN6NgdcWSQztdOo9ofEBAjqg/exec";
 
 const MAX_GUESTS = 6;
 const TOTAL_STEPS = 6;
