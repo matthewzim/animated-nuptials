@@ -227,7 +227,7 @@ export default function Journey() {
 
         // Slightly varying sizes (but account for the padding in our canvas)
         // The visual image occupies IMG_SIZE/CANVAS_SIZE of the plane
-        const baseSize = THREE.MathUtils.randFloat(9, 17);
+        const baseSize = THREE.MathUtils.randFloat(13.5, 25.5);
         const geom = new THREE.PlaneGeometry(baseSize, baseSize);
         const mat = new THREE.MeshBasicMaterial({
           map: tex,
