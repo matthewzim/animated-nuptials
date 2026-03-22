@@ -1,6 +1,96 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+function fireConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText =
+    'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d')!;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+  ctx.scale(dpr, dpr);
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+
+  const colors = [
+    '#ff6b8a', '#ff9a76', '#ffd166', '#06d6a0', '#118ab2',
+    '#8338ec', '#ff006e', '#fb5607', '#3a86ff', '#ffbe0b',
+    '#e07cff', '#00f5d4',
+  ];
+
+  interface Particle {
+    x: number; y: number; vx: number; vy: number;
+    w: number; h: number; color: string;
+    rotation: number; rotationSpeed: number;
+    gravity: number; drag: number; opacity: number;
+  }
+
+  const particles: Particle[] = [];
+
+  // Spawn from all four edges
+  const spawn = (count: number, fromX: () => number, fromY: () => number, vxRange: [number, number], vyRange: [number, number]) => {
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: fromX(), y: fromY(),
+        vx: vxRange[0] + Math.random() * (vxRange[1] - vxRange[0]),
+        vy: vyRange[0] + Math.random() * (vyRange[1] - vyRange[0]),
+        w: 6 + Math.random() * 6,
+        h: 4 + Math.random() * 8,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 12,
+        gravity: 0.12 + Math.random() * 0.08,
+        drag: 0.98 + Math.random() * 0.015,
+        opacity: 1,
+      });
+    }
+  };
+
+  const n = 80;
+  // Left edge
+  spawn(n, () => -10, () => Math.random() * H, [4, 14], [-6, 6]);
+  // Right edge
+  spawn(n, () => W + 10, () => Math.random() * H, [-14, -4], [-6, 6]);
+  // Top edge
+  spawn(n, () => Math.random() * W, () => -10, [-6, 6], [4, 12]);
+  // Bottom edge
+  spawn(n, () => Math.random() * W, () => H + 10, [-6, 6], [-12, -4]);
+
+  let frame: number;
+  const animate = () => {
+    ctx.clearRect(0, 0, W, H);
+    let alive = false;
+    for (const p of particles) {
+      p.vy += p.gravity;
+      p.vx *= p.drag;
+      p.vy *= p.drag;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.rotationSpeed;
+      // Fade out once past screen center region
+      if (p.y > H * 0.6) p.opacity -= 0.008;
+      if (p.x < -100 || p.x > W + 100) p.opacity -= 0.02;
+      if (p.opacity <= 0) continue;
+      alive = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+    if (alive) {
+      frame = requestAnimationFrame(animate);
+    } else {
+      canvas.remove();
+    }
+  };
+  frame = requestAnimationFrame(animate);
+}
+
 interface ScratchCardProps {
   imageSrc: string;
   revealThreshold?: number;
@@ -20,6 +110,12 @@ export default function ScratchCard({
   const [percentScratched, setPercentScratched] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [fadingOut, setFadingOut] = useState(false);
+  const [answered, setAnswered] = useState(false);
+
+  const handleAnswer = () => {
+    setAnswered(true);
+    fireConfetti();
+  };
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
 
   const brushRadius = 28;
@@ -210,17 +306,49 @@ export default function ScratchCard({
         )}
       </AnimatePresence>
 
-      {/* Revealed message */}
+      {/* Revealed message + buttons */}
       <AnimatePresence>
         {revealed && (
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="font-script text-4xl text-[#5c6f8b] md:text-5xl"
+            className="flex flex-col items-center gap-5"
           >
-            Groomsman?
-          </motion.p>
+            <p className="font-script text-4xl text-[#5c6f8b] md:text-5xl">
+              Groomsman?
+            </p>
+
+            {!answered && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                className="flex items-center gap-4"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleAnswer}
+                  className="px-10 py-4 text-2xl font-bold uppercase tracking-widest text-white rounded-xl shadow-lg"
+                  style={{
+                    background: 'linear-gradient(135deg, #5c8fbf 0%, #7ba4c9 100%)',
+                    boxShadow: '0 8px 25px rgba(92, 143, 191, 0.4)',
+                  }}
+                >
+                  Yes
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleAnswer}
+                  className="px-3 py-1.5 text-xs font-medium uppercase tracking-wider text-[#5c6f8b]/70 rounded-md border border-[#bdd5ef]"
+                >
+                  No
+                </motion.button>
+              </motion.div>
+            )}
+          </motion.div>
         )}
       </AnimatePresence>
 
