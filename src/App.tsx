@@ -8,6 +8,11 @@ import { motion } from "framer-motion";
 import Index from "./pages/Index";
 import RSVP from "./pages/RSVP";
 import Journey from "./pages/Journey";
+import J from "./pages/J";
+import D from "./pages/D";
+import R from "./pages/R";
+import L from "./pages/L";
+import B from "./pages/B";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -69,6 +74,11 @@ const App = () => {
             <Route path="/" element={<Index onMusicStart={startMusic} />} />
             <Route path="/rsvp" element={<RSVP />} />
             <Route path="/journey" element={<Journey />} />
+            <Route path="/j" element={<J />} />
+            <Route path="/d" element={<D />} />
+            <Route path="/r" element={<R />} />
+            <Route path="/l" element={<L />} />
+            <Route path="/b" element={<B />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
