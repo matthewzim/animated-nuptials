@@ -113,10 +113,13 @@ export default function ScratchCard({
   const [revealed, setRevealed] = useState(false);
   const [fadingOut, setFadingOut] = useState(false);
   const [answered, setAnswered] = useState(false);
+  const [flipped, setFlipped] = useState(false);
 
   const handleAnswer = () => {
     setAnswered(true);
     fireConfetti();
+    // Flip the card after a short delay to let confetti start
+    setTimeout(() => setFlipped(true), 800);
   };
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
 
@@ -366,38 +369,76 @@ export default function ScratchCard({
         )}
       </AnimatePresence>
 
-      {/* Card container */}
-      <div
-        className="relative rounded-2xl overflow-hidden"
-        style={{
-          width,
-          height,
-          boxShadow:
-            '0 20px 50px rgba(90, 116, 146, 0.25), 0 4px 16px rgba(0,0,0,0.1)',
-        }}
-      >
-        {/* Hidden image underneath */}
-        <img
-          src={imageSrc}
-          alt="Reveal"
-          className="absolute inset-0 w-full h-full object-cover"
-          draggable={false}
-        />
+      {/* Card container with 3D flip */}
+      <div style={{ width, height, perspective: 1000 }}>
+        <motion.div
+          animate={{ rotateY: flipped ? 180 : 0 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'relative',
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {/* Front face */}
+          <div
+            className="absolute inset-0 rounded-2xl overflow-hidden"
+            style={{
+              backfaceVisibility: 'hidden',
+              boxShadow:
+                '0 20px 50px rgba(90, 116, 146, 0.25), 0 4px 16px rgba(0,0,0,0.1)',
+            }}
+          >
+            {/* Hidden image underneath */}
+            <img
+              src={imageSrc}
+              alt="Reveal"
+              className="absolute inset-0 w-full h-full object-cover"
+              draggable={false}
+            />
 
-        {/* Canvas scratch layer */}
-        <motion.canvas
-          ref={canvasRef}
-          animate={{ opacity: fadingOut ? 0 : 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className={`absolute inset-0 rounded-2xl touch-none ${interactive ? 'cursor-crosshair' : 'cursor-default'}`}
-          onMouseDown={handleStart}
-          onMouseMove={handleMove}
-          onMouseUp={handleEnd}
-          onMouseLeave={handleEnd}
-          onTouchStart={handleStart}
-          onTouchMove={handleMove}
-          onTouchEnd={handleEnd}
-        />
+            {/* Canvas scratch layer */}
+            <motion.canvas
+              ref={canvasRef}
+              animate={{ opacity: fadingOut ? 0 : 1 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className={`absolute inset-0 rounded-2xl touch-none ${interactive ? 'cursor-crosshair' : 'cursor-default'}`}
+              onMouseDown={handleStart}
+              onMouseMove={handleMove}
+              onMouseUp={handleEnd}
+              onMouseLeave={handleEnd}
+              onTouchStart={handleStart}
+              onTouchMove={handleMove}
+              onTouchEnd={handleEnd}
+            />
+          </div>
+
+          {/* Back face — responsibilities */}
+          <div
+            className="absolute inset-0 rounded-2xl overflow-hidden flex flex-col items-center justify-center px-6 py-8"
+            style={{
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+              background: 'linear-gradient(135deg, #e9f3ff 0%, #dae8fa 100%)',
+              boxShadow:
+                '0 20px 50px rgba(90, 116, 146, 0.25), 0 4px 16px rgba(0,0,0,0.1)',
+            }}
+          >
+            <h2 className="text-2xl font-bold text-[#3a5a80] mb-5 tracking-wide">
+              Responsibilities
+            </h2>
+            <div className="text-[#3a5a80] text-sm leading-relaxed text-center space-y-1">
+              <p className="font-bold">Saturday, August 1st (Date TBD) Bachelor Party</p>
+              <p>Morning: Gun Range</p>
+              <p>Afternoon: Sauna + Cold Plunge</p>
+              <p>Dinner: Olive Garden</p>
+              <p className="font-bold pt-3">August 6th Wedding Rehearsal</p>
+              <p className="font-bold pt-3">August 8th Wedding</p>
+              <p>5km run in the morning before the wedding</p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
