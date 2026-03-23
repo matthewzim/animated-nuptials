@@ -21,7 +21,7 @@ export default function ScratchEnvelopePage({ imageSrc }: ScratchEnvelopePagePro
     <div className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#edf5ff] px-4 py-8">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.85),transparent_50%),radial-gradient(circle_at_80%_70%,rgba(214,231,255,0.7),transparent_45%)]" />
 
-      <div className="relative flex flex-col items-center">
+      <div className="relative w-full flex flex-col items-center">
         {/* Scratch card emerging from envelope */}
         <div className="relative z-10">
           <AnimatePresence>
