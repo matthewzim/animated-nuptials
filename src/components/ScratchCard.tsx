@@ -96,6 +96,7 @@ interface ScratchCardProps {
   revealThreshold?: number;
   width?: number;
   height?: number;
+  interactive?: boolean;
 }
 
 export default function ScratchCard({
@@ -103,6 +104,7 @@ export default function ScratchCard({
   revealThreshold = 0.7,
   width = 320,
   height = 420,
+  interactive = true,
 }: ScratchCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -207,36 +209,47 @@ export default function ScratchCard({
     []
   );
 
+  const clearCircle = useCallback(
+    (ctx: CanvasRenderingContext2D, cx: number, cy: number) => {
+      // Use clearRect for the inner square area — guarantees 100% transparency
+      // Coordinates are in CSS pixels (ctx already has DPR scale applied)
+      const innerR = brushRadius * 0.7;
+      ctx.clearRect(cx - innerR, cy - innerR, innerR * 2, innerR * 2);
+      // Then draw destination-out arc for smooth circular edges
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(cx, cy, brushRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    },
+    []
+  );
+
   const scratch = useCallback(
     (x: number, y: number) => {
       const ctx = ctxRef.current;
-      if (!ctx || revealed || fadingOut) return;
+      if (!ctx || revealed || fadingOut || !interactive) return;
 
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath();
-      ctx.arc(x, y, brushRadius, 0, Math.PI * 2);
-      ctx.fill();
+      clearCircle(ctx, x, y);
 
       // Interpolate between last point and current for smooth strokes
       if (lastPoint.current) {
         const dx = x - lastPoint.current.x;
         const dy = y - lastPoint.current.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        const steps = Math.ceil(dist / (brushRadius * 0.4));
+        const steps = Math.ceil(dist / (brushRadius * 0.25));
         for (let i = 1; i < steps; i++) {
           const t = i / steps;
           const ix = lastPoint.current.x + dx * t;
           const iy = lastPoint.current.y + dy * t;
-          ctx.beginPath();
-          ctx.arc(ix, iy, brushRadius, 0, Math.PI * 2);
-          ctx.fill();
+          clearCircle(ctx, ix, iy);
         }
       }
 
       lastPoint.current = { x, y };
-      ctx.globalCompositeOperation = 'source-over';
     },
-    [revealed, fadingOut]
+    [revealed, fadingOut, interactive, clearCircle]
   );
 
   const calculateScratched = useCallback(() => {
@@ -265,12 +278,13 @@ export default function ScratchCard({
   const handleStart = useCallback(
     (e: React.MouseEvent | React.TouchEvent) => {
       e.preventDefault();
+      if (!interactive) return;
       isDrawing.current = true;
       lastPoint.current = null;
       const pt = getCanvasPoint(e);
       if (pt) scratch(pt.x, pt.y);
     },
-    [getCanvasPoint, scratch]
+    [getCanvasPoint, scratch, interactive]
   );
 
   const handleMove = useCallback(
@@ -375,7 +389,7 @@ export default function ScratchCard({
           ref={canvasRef}
           animate={{ opacity: fadingOut ? 0 : 1 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="absolute inset-0 rounded-2xl cursor-crosshair touch-none"
+          className={`absolute inset-0 rounded-2xl touch-none ${interactive ? 'cursor-crosshair' : 'cursor-default'}`}
           onMouseDown={handleStart}
           onMouseMove={handleMove}
           onMouseUp={handleEnd}
