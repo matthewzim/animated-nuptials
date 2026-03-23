@@ -191,7 +191,7 @@ export default function ScratchCard({
   };
 
   const getCanvasPoint = useCallback(
-    (e: React.MouseEvent | React.TouchEvent) => {
+    (e: React.MouseEvent | React.TouchEvent | TouchEvent | MouseEvent) => {
       const canvas = canvasRef.current;
       if (!canvas) return null;
       const rect = canvas.getBoundingClientRect();
@@ -276,8 +276,7 @@ export default function ScratchCard({
   }, [revealThreshold, revealed, fadingOut]);
 
   const handleStart = useCallback(
-    (e: React.MouseEvent | React.TouchEvent) => {
-      e.preventDefault();
+    (e: React.MouseEvent | React.TouchEvent | TouchEvent | MouseEvent) => {
       if (!interactive) return;
       isDrawing.current = true;
       lastPoint.current = null;
@@ -288,8 +287,7 @@ export default function ScratchCard({
   );
 
   const handleMove = useCallback(
-    (e: React.MouseEvent | React.TouchEvent) => {
-      e.preventDefault();
+    (e: React.MouseEvent | React.TouchEvent | TouchEvent | MouseEvent) => {
       if (!isDrawing.current) return;
       const pt = getCanvasPoint(e);
       if (pt) scratch(pt.x, pt.y);
@@ -302,6 +300,35 @@ export default function ScratchCard({
     lastPoint.current = null;
     calculateScratched();
   }, [calculateScratched]);
+
+  // Attach native touch listeners with { passive: false } so preventDefault()
+  // actually stops mobile scroll while scratching the card.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
+      handleStart(e as unknown as React.TouchEvent);
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      handleMove(e as unknown as React.TouchEvent);
+    };
+    const onTouchEnd = () => {
+      handleEnd();
+    };
+
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+    canvas.addEventListener('touchend', onTouchEnd);
+
+    return () => {
+      canvas.removeEventListener('touchstart', onTouchStart);
+      canvas.removeEventListener('touchmove', onTouchMove);
+      canvas.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [handleStart, handleMove, handleEnd]);
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -405,9 +432,6 @@ export default function ScratchCard({
               onMouseMove={handleMove}
               onMouseUp={handleEnd}
               onMouseLeave={handleEnd}
-              onTouchStart={handleStart}
-              onTouchMove={handleMove}
-              onTouchEnd={handleEnd}
             />
           </div>
 
