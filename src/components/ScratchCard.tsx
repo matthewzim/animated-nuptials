@@ -430,7 +430,7 @@ export default function ScratchCard({
               <p>Morning: Gun Range</p>
               <p>Afternoon: Sauna + Cold Plunge</p>
               <p>Dinner: Olive Garden</p>
-              <p className="font-bold pt-3">August 8th Wedding</p>
+              <p className="font-bold pt-3">Saturday, August 8th Wedding</p>
               <p>5km run in the morning before the wedding</p>
             </div>
           </div>
