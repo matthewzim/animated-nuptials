@@ -214,12 +214,9 @@ export default function ScratchCard({
 
   const clearCircle = useCallback(
     (ctx: CanvasRenderingContext2D, cx: number, cy: number) => {
-      // Use destination-out arc for a circular scratch shape
       ctx.save();
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath();
-      ctx.arc(cx, cy, brushRadius, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(cx - brushRadius, cy - brushRadius, brushRadius * 2, brushRadius * 2);
       ctx.restore();
     },
     []

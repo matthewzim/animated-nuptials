@@ -86,7 +86,7 @@ export default function ScratchEnvelopePage({ imageSrc }: ScratchEnvelopePagePro
                 exit={{ opacity: 0, scale: 0.8, y: -10 }}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
-                className="absolute left-[38%] top-[42%] z-50 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                className="absolute left-[37%] top-[42%] z-50 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
               >
                 <img
                   src="/waxseal.png"
