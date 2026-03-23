@@ -101,7 +101,7 @@ interface ScratchCardProps {
 
 export default function ScratchCard({
   imageSrc,
-  revealThreshold = 0.7,
+  revealThreshold = 0.6,
   width = 320,
   height = 420,
   interactive = true,
@@ -214,11 +214,7 @@ export default function ScratchCard({
 
   const clearCircle = useCallback(
     (ctx: CanvasRenderingContext2D, cx: number, cy: number) => {
-      // Use clearRect for the inner square area — guarantees 100% transparency
-      // Coordinates are in CSS pixels (ctx already has DPR scale applied)
-      const innerR = brushRadius * 0.7;
-      ctx.clearRect(cx - innerR, cy - innerR, innerR * 2, innerR * 2);
-      // Then draw destination-out arc for smooth circular edges
+      // Use destination-out arc for a circular scratch shape
       ctx.save();
       ctx.globalCompositeOperation = 'destination-out';
       ctx.beginPath();
@@ -433,7 +429,6 @@ export default function ScratchCard({
               <p>Morning: Gun Range</p>
               <p>Afternoon: Sauna + Cold Plunge</p>
               <p>Dinner: Olive Garden</p>
-              <p className="font-bold pt-3">August 6th Wedding Rehearsal</p>
               <p className="font-bold pt-3">August 8th Wedding</p>
               <p>5km run in the morning before the wedding</p>
             </div>
