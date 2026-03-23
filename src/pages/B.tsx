@@ -1,5 +1,6 @@
 import ScratchEnvelopePage from '@/components/ScratchEnvelopePage';
+import bImg from '@/assets/b.jpg';
 
 export default function B() {
-  return <ScratchEnvelopePage imageSrc="/b.png" />;
+  return <ScratchEnvelopePage imageSrc={bImg} />;
 }
