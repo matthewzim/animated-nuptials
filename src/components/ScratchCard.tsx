@@ -214,9 +214,13 @@ export default function ScratchCard({
 
   const clearCircle = useCallback(
     (ctx: CanvasRenderingContext2D, cx: number, cy: number) => {
+      // Use clearRect for the inner square area — guarantees 100% transparency
+      // Coordinates are in CSS pixels (ctx already has DPR scale applied)
+      const innerR = brushRadius * 0.7;
+      ctx.clearRect(cx - innerR, cy - innerR, innerR * 2, innerR * 2);
+      // Then draw destination-out arc for smooth circular edges
       ctx.save();
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillRect(cx - brushRadius, cy - brushRadius, brushRadius * 2, brushRadius * 2);
       ctx.restore();
     },
     []
