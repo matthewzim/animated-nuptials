@@ -149,8 +149,20 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                   answer: "Our wedding ceremony will be held outdoors, rain or shine. Please come prepared for the weather. If it should rain, umbrellas will be provided to guests. Our reception will be a combination of both indoor and outdoor areas."
                 },
                 {
-                  question: "Is there a wedding registry?",
-                  answer: "We'll post our registry here in the coming months."
+                  question: "Wedding Registry",
+                  answer: (
+                    <>
+                      <span className="block mb-3">
+                        <span className="font-medium">Honeymoon &amp; Home Fund:</span> Cash contributions are warmly welcomed as we build our new home together and plan our dream honeymoon. If you prefer e-transfer, please email to:{" "}
+                        <a href="mailto:morganaucoin04@gmail.com" className="underline hover:text-foreground transition-colors">morganaucoin04@gmail.com</a>.
+                      </span>
+                      <span className="block mb-3">
+                        <span className="font-medium">Registry:</span> If you prefer giving a physical gift, please check out our registry linked below.{" "}
+                        <a href="https://www.myregistry.com/wedding-registry/morgan-aucoin-and-matthew-zimmerman-vancouver-bc/5468809" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition-colors break-words">View our registry</a>
+                      </span>
+                      <span className="block">Thank you so much for your love and generosity!</span>
+                    </>
+                  )
                 }
               ].map((faq, index) => (
                 <div key={index} className="text-center">
