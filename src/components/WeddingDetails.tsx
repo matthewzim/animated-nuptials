@@ -157,7 +157,9 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                         <a href="mailto:morganaucoin04@gmail.com" className="underline hover:text-foreground transition-colors">morganaucoin04@gmail.com</a>.
                       </span>
                       <span className="block mb-3">
-                        <span className="font-medium">Registry:</span> If you prefer giving a physical gift, please check out our registry linked below.{" "}
+                        <span className="font-medium">Registry:</span> If you prefer giving a physical gift, please check out our registry linked below.
+                      </span>
+                      <span className="block mb-3">
                         <a href="https://www.myregistry.com/wedding-registry/morgan-aucoin-and-matthew-zimmerman-vancouver-bc/5468809" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition-colors break-words">View our registry</a>
                       </span>
                       <span className="block">Thank you so much for your love and generosity!</span>
