@@ -14,7 +14,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
       delay: "0.2s",
     },
     {
-      content: "2:00 PM Arrival // 2:30 PM Ceremony",
+      content: "2:30 PM Arrival // 3:00 PM Ceremony",
       delay: "0.4s",
     },
     {
@@ -93,8 +93,8 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             </h4>
             <div className="space-y-5">
               {[
-                { time: "2:00 PM", event: "Arrival" },
-                { time: "2:30 PM", event: "Ceremony" },
+                { time: "2:30 PM", event: "Arrival" },
+                { time: "3:00 PM", event: "Ceremony" },
                 { time: "4:00 PM", event: "Cocktail Hour" },
                 { time: "5:30 PM", event: "Reception" },
               ].map((item, index) => (
@@ -142,7 +142,7 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                 },
                 {
                   question: "What time should I arrive at your wedding ceremony?",
-                  answer: "We recommend arriving by 2:00PM to give yourself plenty of time to settle in before the ceremony starts at 2:30PM. We can't wait to see you there!"
+                  answer: "We recommend arriving by 2:30PM to give yourself plenty of time to settle in before the ceremony starts at 3:00PM. We can't wait to see you there!"
                 },
                 {
                   question: "Will your wedding be indoors or outdoors?",
@@ -153,11 +153,11 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
                   answer: (
                     <>
                       <span className="block mb-3">
-                        <span className="font-medium">Honeymoon &amp; Home Fund:</span> Cash contributions are warmly welcomed as we build our new home together and plan our dream honeymoon. If you prefer e-transfer, please email to:{" "}
+                        <span className="font-bold">Honeymoon &amp; Home Fund:</span> Cash contributions are warmly welcomed as we build our new home together and plan our dream honeymoon. If you prefer e-transfer, please email to:{" "}
                         <a href="mailto:morganaucoin04@gmail.com" className="underline hover:text-foreground transition-colors">morganaucoin04@gmail.com</a>.
                       </span>
                       <span className="block mb-3">
-                        <span className="font-medium">Registry:</span> If you prefer giving a physical gift, please check out our registry linked below.
+                        <span className="font-bold">Registry:</span> If you prefer giving a physical gift, please check out our registry linked below. Our registry is meant as a guide, so please feel free to shop around for the best price, purchase the same item from another retailer (such as Costco), or choose a similar item if you find something comparable.
                       </span>
                       <span className="block mb-3">
                         <a href="https://www.myregistry.com/wedding-registry/morgan-aucoin-and-matthew-zimmerman-vancouver-bc/5468809" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition-colors break-words">View our registry</a>
