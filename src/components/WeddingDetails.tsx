@@ -234,9 +234,6 @@ export const WeddingDetails = ({ isVisible }: WeddingDetailsProps) => {
             >
               Kindly Respond
             </button>
-            <p className="mt-6 font-elegant text-sm tracking-[0.15em] uppercase text-muted-foreground">
-              Please respond by May 1st, 2026
-            </p>
           </div>
 
           </div>
