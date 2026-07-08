@@ -416,8 +416,7 @@ const RSVP = () => {
             We Would Be Honored
           </p>
           <h1 className="font-serif text-5xl md:text-6xl text-stone-600 mb-4 font-semibold">RSVP</h1>
-          <p className="text-muted-foreground">Please respond by May 1st, 2026</p>
-          <p className="text-muted-foreground mt-2">We kindly ask that you bring only the guest(s) specified on your invitation.</p>
+          <p className="text-muted-foreground">We kindly ask that you bring only the guest(s) specified on your invitation.</p>
         </div>
 
         <form className="space-y-6">
